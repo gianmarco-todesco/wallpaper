@@ -1,3 +1,4 @@
+'use strict';
 const m4 = twgl.m4;
 let gl;
 
@@ -6,54 +7,12 @@ let programInfo, programInfo2;
 let bufferInfo, bufferInfo2;
 let frameBufferInfo;
 
+
+/*
 const va = {x:200, y:40};
 const vb = {x:100, y:240};
 
-function createPrograms() {
-
-  programInfo = twgl.createProgramInfo(gl, [
-    `
-    uniform mat4 u_matrix;
-    attribute vec2 a_position;
-    void main() {
-      gl_Position = u_matrix * vec4(a_position, 0, 1);
-    }
-    `,
-    `
-    precision mediump float;
-    uniform vec4 u_color;
-    void main() {
-      gl_FragColor = u_color;
-    }
-    `
-  ]);
-  
-  programInfo2 = twgl.createProgramInfo(gl, [
-    `
-    uniform mat4 u_matrix;
-    attribute vec2 a_position;
-    attribute vec2 a_texcoord;
-    varying vec2 v_texcoord;
-
-    void main() {
-      gl_Position = u_matrix * vec4(a_position, 0, 1);
-      v_texcoord = a_texcoord;
-    }
-    `,
-    `
-    precision mediump float;
-    uniform sampler2D u_texture;
-    varying vec2 v_texcoord;
-    // varying vec4 v_color;
-
-    void main() {
-      gl_FragColor = texture2D(u_texture, v_texcoord);
-    }
-    `
-  ]);
-}
-
-function createShapes() {
+function createShapes2() {
   const array1 = {
     position: {
       data: [-0.9,-0.9,0.9,-0.9,0.9,0.9],
@@ -125,8 +84,9 @@ function createShapes() {
       position: twgl.primitives.createAugmentedTypedArray(2, 6),
       // color: twgl.primitives.createAugmentedTypedArray(3, numLines * 2, Uint8Array),
     };
-    */
+    * /
 }
+*/
 
 function createDynamicTexture() {
   const attachments = [
@@ -147,47 +107,11 @@ function createDynamicTexture() {
 
 }
 
+let texture, uff;
 
 document.addEventListener('DOMContentLoaded', ()=>{
     
-    twgl.setDefaults({attribPrefix: "a_"});
-    gl = document.getElementById("renderCanvas").getContext("webgl");
-    twgl.resizeCanvasToDisplaySize(gl.canvas);
-  
-    createPrograms();
-    createShapes();
-
-    createDynamicTexture();
-
-
-    /*
-    const txCtx = document.createElement("canvas").getContext("2d");
-    txCtx.canvas.width  = 256;
-    txCtx.canvas.height = 256;
-
-
-    function updateCtx() {
-        txCtx.clearRect(0,0,txCtx.canvas.width,txCtx.canvas.height);
-        txCtx.fillStyle = 'red';
-        txCtx.beginPath();    
-        let r = 30 + 30 * Math.cos(performance.now()*0.003);
-        txCtx.arc(txCtx.canvas.width/2,txCtx.canvas.height/2,r,0,2*Math.PI);
-        txCtx.fill();
-    }
-    updateCtx();
-
-
-    const textures = twgl.createTextures(gl, {tx: {
-        mag: gl.NEAREST,
-        min: gl.LINEAR,
-        src: txCtx.canvas}});
-
-    function updateTexture() {
-        gl.bindTexture(gl.TEXTURE_2D, textures.tx);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,gl.RGBA, gl.UNSIGNED_BYTE, txCtx.canvas);
-    }
-    */
-
+  initialize();
 
     function animate() {
       render();
@@ -195,6 +119,63 @@ document.addEventListener('DOMContentLoaded', ()=>{
     }
     animate();
 });
+
+
+function initialize() {
+  twgl.setDefaults({attribPrefix: "a_"});
+  gl = document.getElementById("renderCanvas").getContext("webgl");
+  twgl.resizeCanvasToDisplaySize(gl.canvas);
+
+  GU.init(gl);
+  
+  // createShapes2();
+
+  createDynamicTexture();
+    //gl.enable(gl.CULL_FACE);
+
+  // clear offline buffer  
+  gl.clearColor(0.0, 0.5, 0.7, 1);
+  gl.clear(gl.COLOR_BUFFER_BIT);
+
+
+  let textureCanvas = GU.createBlurredDotTexture();
+  texture = twgl.createTexture(gl, {
+    src: textureCanvas,
+  });
+
+
+  /*
+  const txCtx = document.createElement("canvas").getContext("2d");
+  txCtx.canvas.width  = 256;
+  txCtx.canvas.height = 256;
+
+
+  function updateCtx() {
+      txCtx.clearRect(0,0,txCtx.canvas.width,txCtx.canvas.height);
+      txCtx.fillStyle = 'red';
+      txCtx.beginPath();    
+      let r = 30 + 30 * Math.cos(performance.now()*0.003);
+      txCtx.arc(txCtx.canvas.width/2,txCtx.canvas.height/2,r,0,2*Math.PI);
+      txCtx.fill();
+  }
+  updateCtx();
+
+
+  const textures = twgl.createTextures(gl, {tx: {
+      mag: gl.NEAREST,
+      min: gl.LINEAR,
+      src: txCtx.canvas}});
+
+  function updateTexture() {
+      gl.bindTexture(gl.TEXTURE_2D, textures.tx);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,gl.RGBA, gl.UNSIGNED_BYTE, txCtx.canvas);
+  }
+  */
+
+  sg = createSymmetryGroup();
+  sg.setCanvasSize(gl.canvas.width, gl.canvas.height)
+
+}
 
 let px = 200, py = 250;
 
@@ -204,8 +185,123 @@ document.addEventListener('mousemove', e => {
 
 })
 
+let worldPolygon;
 
 function render() {
+
+  const sqrt3_2 = Math.sqrt(3)/2;
+    
+    let phi = performance.now()*0.0005;  
+    let r = 100;
+    let va = [r*Math.cos(phi),r*Math.sin(phi)];
+    let vb = [va[0]/2-va[1]*sqrt3_2, va[1]/2+va[0]*sqrt3_2];
+    sg.setVectors(va,vb);
+
+    let matrix = m4.identity();
+
+
+  // draw offline buffer
+  twgl.bindFramebufferInfo(gl, frameBufferInfo);
+
+  m4.translate(matrix, [-1+2*px/gl.canvas.width, -1 + 2*py/gl.canvas.height,0], matrix);
+  m4.scale(matrix, [0.1,0.1,1], matrix)
+  //GU.dot.draw(GU.simpleMaterial, { u_matrix : matrix, u_color : [1,0,0,1]});
+
+
+
+  // draw canvas
+  twgl.bindFramebufferInfo(gl);
+
+  // resize
+  twgl.resizeCanvasToDisplaySize(gl.canvas);
+  gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+  let viewMatrix = GU.viewMatrix = m4.ortho(
+    0, gl.canvas.clientWidth, 
+    0,  gl.canvas.clientHeight, 
+    -1, 1);
+
+  // clear
+  gl.clearColor(0.0, 0.0, 0.0, 0);
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+
+  GU.fillRect(px,py,40,10,[1,0,1,1]);
+  GU.fillRect(px+50,py,10,10,[0,1,1,1]);
+  GU.fillRect(px+40,py+10,10,10,[0,1,1,1]);
+  
+  const mrg = 150;
+  
+  GU.drawDot(sg.cell[0][0],sg.cell[0][1], [1,0,0,1]);
+  GU.drawDot(sg.cell[1][0],sg.cell[1][1], [0,1,0,1]);
+  GU.drawDot(sg.cell[2][0],sg.cell[2][1], [0,0,1,1]);
+  
+
+  //if(!worldPolygon) {
+    worldPolygon = sg.createWorldPolygon(gl, worldPolygon);
+  //}
+
+
+  worldPolygon.draw(GU.texturedMaterial, { u_matrix : viewMatrix, u_texture : texture});
+  
+
+
+  
+  GU.drawParallelogram(sg.cell[0], sg.a, sg.b, [0.5,0.5,0.5,1]);
+  const [u0,u1,v0,v1] = sg._computeUVRange();
+
+  const [x0,y0] = sg.cell[0];
+  const [ax,ay] = sg.a;
+  const [bx,by] = sg.b;
+
+
+
+
+
+  GU.drawParallelogram(
+    [x0+ax*u0+bx*v0, y0+ay*u0+by*v0], 
+    [ax*(u1-u0),ay*(u1-u0)],
+    [bx*(v1-v0),by*(v1-v0)],
+  [0.75,0.75,0.75,1]);
+  
+
+  GU.drawRect(mrg,mrg,gl.canvas.width-mrg*2,gl.canvas.height-mrg*2, [1,0,0,1]);
+
+  
+
+  /*
+
+
+  m4.translate(viewMatrix, [px,py,0], matrix);
+  m4.scale(matrix, [10,10,1], matrix)
+  GU.dot.draw(GU.simpleMaterial, { u_matrix : matrix, u_color : [1,0,0,1]});
+
+  m4.translate(viewMatrix, [px+40,py,0], matrix);
+  m4.scale(matrix, [10,10,1], matrix)
+  GU.dot.draw(GU.simpleMaterial, { u_matrix : matrix, u_color : [0,1,0,1]});
+
+  gl.enable(gl.BLEND);
+  gl.blendFunc(gl.ONE, gl.ONE);
+  //gl.blendFunc(gl.ONE, gl.SRC_ALPHA);
+
+  // gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+  m4.translate(viewMatrix, [120,120,0], matrix);
+  m4.scale(matrix, [100,100,1], matrix);
+  GU.dot.draw(GU.texturedMaterial, { u_matrix : matrix, u_texture : texture});
+  m4.translate(viewMatrix, [px+60,120,0], matrix);
+  m4.scale(matrix, [100,100,1], matrix);
+  GU.dot.draw(GU.texturedMaterial, { u_matrix : matrix, u_texture : texture});
+
+
+  m4.translate(viewMatrix, [400,300,0], matrix);
+  m4.scale(matrix, [100,100,1], matrix);
+  GU.dot.draw(GU.texturedMaterial, { u_matrix : matrix, u_texture : frameBufferInfo.attachments[0]});
+  
+  //gl.blendFunc(gl.ONE, gl.ZERO);
+  */
+
+}
+
+function render2() {
 
 
   let y = ((px-x0)*va.y - (py-y0)*va.x) / (vb.x*va.y - vb.y*va.x);
