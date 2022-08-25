@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title>Wallpaper</title>
+        <style>
+            html, body {
+                overflow:hidden;
+                width:100%;
+                height:100%;
+                margin:0;
+                padding:0;
+            }
+            #renderCanvas {
+                margin:20px;
+                width:800px;
+                height:600px;
+                border:solid 1px gray;
+                touch-action: none;
+            }
+        </style>
+        <script src="twgl-full.js"></script>
+        <script src="symmetry-groups.js"></script>
+        <script src="main.js"></script>
+    </head>
+    <body>
+        <canvas id="renderCanvas"></canvas>
+    </body>
+</html>
