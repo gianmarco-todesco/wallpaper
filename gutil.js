@@ -165,8 +165,8 @@ GU.drawParallelogram = function(p0,a,b,color) {
 
 
 
-GU.drawDot = function(x,y,color) {
-    GU.fillRect(x-5,y-5,10,10,color);
+GU.drawDot = function(x,y,color,r=5) {
+    GU.fillRect(x-r,y-r,2*r,2*r,color);
 }
 
 
@@ -180,7 +180,7 @@ GU.createBlurredDotTexture = function() {
     let t = performance.now();
     let canvas = document.createElement('canvas');
     canvas.style.background = "transparent";
-    let sz = canvas.width = canvas.height = 128;
+    let sz = canvas.width = canvas.height = 64;
     let ctx = canvas.getContext('2d');
     const imageData = ctx.createImageData(canvas.width, canvas.height);
     let ra = sz * 0.2, rb = sz * 0.45;
@@ -192,9 +192,9 @@ GU.createBlurredDotTexture = function() {
             v = 1.0-Math.cos(Math.PI*v);
             v = Math.floor(255.0*v);
             let i = (y*canvas.width+x)*4;
-            imageData.data[i] = Math.floor(v*0.7);
-            imageData.data[i+1] = Math.floor(v*0.5);
-            imageData.data[i+2] = Math.floor(v*0.23);
+            imageData.data[i] = 200;
+            imageData.data[i+1] = 100;
+            imageData.data[i+2] = 50;
             imageData.data[i+3] = v;            
         }
     }
