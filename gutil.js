@@ -78,17 +78,19 @@ function createPrograms(gl) {
         fs:`
         precision mediump float;
         uniform sampler2D u_texture;
+        uniform vec4 u_color;
         varying vec2 v_texcoord;
         // varying vec4 v_color;
     
         void main() {
-            vec4 color = texture2D(u_texture, v_texcoord);
+            vec4 color = texture2D(u_texture, v_texcoord) * u_color;
             gl_FragColor = color;
         }
         `,
         uniforms: {
             u_matrix : twgl.m4.identity(),
-            u_texture: null
+            u_texture: null,
+            u_color: [1,1,1,1]
         }
     });
 }
@@ -192,9 +194,9 @@ GU.createBlurredDotTexture = function() {
             v = 1.0-Math.cos(Math.PI*v);
             v = Math.floor(255.0*v);
             let i = (y*canvas.width+x)*4;
-            imageData.data[i] = 200;
-            imageData.data[i+1] = 100;
-            imageData.data[i+2] = 50;
+            imageData.data[i] = 255;
+            imageData.data[i+1] = 255;
+            imageData.data[i+2] = 255;
             imageData.data[i+3] = v;            
         }
     }

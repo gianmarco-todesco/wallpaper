@@ -13,7 +13,26 @@ let phi = 0.2; // 2.18; // performance.now()*0.00002;
 const margin = 0;
 let mousePos = [0,0];
 let sg;
+let canvasPos = [0,0];
+let currentColor = chroma.hsv(0,1,0.6);
 
+function getCurrentColorRgba() {
+    let rgb = currentColor.rgb();
+    return [rgb[0]/255,rgb[1]/255,rgb[2]/255,1];
+}
+//
+// computeCanvasPos
+// 
+function computeCanvasPos() {
+  let el = gl.canvas;
+  canvasPos[0] = 0;
+  canvasPos[1] = 0;
+  while(el) {
+    canvasPos[0] += el.offsetLeft;
+    canvasPos[1] += el.offsetTop;
+    el = el.parentElement;    
+  }
+}
 
 function createDynamicTexture() {
   const attachments = [
@@ -47,13 +66,24 @@ document.addEventListener('DOMContentLoaded', ()=>{
     animate();
 });
 
+// resize
+window.addEventListener('resize', (event) => {
+  twgl.resizeCanvasToDisplaySize(gl.canvas);
+  sg.setCanvasSize(gl.canvas.width, gl.canvas.height, margin);    
+  worldToBufferMatrix = sg.getWorldToBufferMatrix();
+  worldPolygon = sg.createWorldPolygon(gl, worldPolygon);
+  computeCanvasPos();
+});
 
 //
 // initialize
 //
 function initialize() {
   twgl.setDefaults({attribPrefix: "a_"});
-  gl = document.getElementById("renderCanvas").getContext("webgl");
+  gl = document.getElementById("renderCanvas").getContext("webgl", {
+    alpha: false,
+    antialias: true,
+  });
   twgl.resizeCanvasToDisplaySize(gl.canvas);
 
   GU.init(gl);
@@ -85,6 +115,7 @@ function initialize() {
   //sg = createSymmetryGroup();
   //sg.setCanvasSize(gl.canvas.width, gl.canvas.height, margin)
   //worldToBufferMatrix = sg.getWorldToBufferMatrix();
+  computeCanvasPos();
   setCurrentGroup("P1");
 
   initPointerEvents(gl.canvas);
@@ -106,70 +137,42 @@ function clearOfflineBuffer() {
 // getMousePos
 // 
 function getMousePos(e) {
-    let x = e.clientX - gl.canvas.offsetLeft;
-    let y = gl.canvas.height - (e.clientY - gl.canvas.offsetTop);
+    let x = e.clientX - canvasPos[0];
+    let y = gl.canvas.height - (e.clientY - canvasPos[1]);
   
     return [x,y];
 }
 
-
-function initButtons() {
-    document.querySelectorAll('.buttons-group').forEach(g => {
-        let buttons = g.querySelectorAll('button');
-        buttons.forEach(btn => {
-            btn.addEventListener('click', ()=>{
-                btn.classList.add('checked');
-                Array.from(buttons)
-                    .filter(other=>other!==btn)
-                    .forEach(other=>other.classList.remove('checked'));
-            });            
-        })
-    });
-    document.querySelectorAll('#group-buttons button').forEach(b=>{
-        let btnId = b.getAttribute('id');
-        let match = /^(.*)-btn$/.exec(btnId);
-        if(match) {
-            let groupId = match[1];
-            if(groupTable[groupId])
-                b.onclick = ()=> setCurrentGroup(groupId);
-            else 
-                b.style.color = "gray";
-        }
-    })
-    let colors = document.getElementById('colors');
-    const m = 10;
-    for(let i=0;i<m;i++) {
-        let btn = document.createElement('div');
-        btn.classList.add('color-btn');
-        colors.appendChild(btn);
-    }
-}
 //
 // initPointerEvents
 // 
 function initPointerEvents(canvas) {
+    let dx, dy;
     canvas.addEventListener('pointerdown', e => {
+        dx = e.offsetX - e.clientX;
+        dy = e.offsetY - e.clientY;
+        
+      console.log(e);
         mouseDown = true;
-        [px,py] = getMousePos(e);
+        [px,py] = [e.clientX + dx, gl.canvas.height - (e.clientY + dy)];
         if(sg) stroke(px,py);
-        document.addEventListener('pointermove', onPointerMove);
+        document.addEventListener('pointermove', onPointerDrag);
         document.addEventListener('pointerup', onPointerUp);        
     });   
-    canvas.addEventListener('pointermove', e => { 
-        mousePos = getMousePos(e);
-    });
+
+    function onPointerDrag(e) {        
+        [px,py] = [e.clientX + dx, gl.canvas.height - (e.clientY + dy)];
+        if(mouseDown) stroke(px,py);
+    }
+    
+    function onPointerUp(e) {
+        mouseDown = false;
+        document.removeEventListener('pointermove', onPointerDrag);
+        document.removeEventListener('pointerup', onPointerUp);
+    }
+    
 }
 
-function onPointerMove(e) {
-    [px,py] = getMousePos(e);
-    if(mouseDown) stroke(px,py);
-}
-
-function onPointerUp(e) {
-    mouseDown = false;
-    document.removeEventListener('pointermove', onPointerMove);
-    document.removeEventListener('pointerup', onPointerUp);
-}
 
 
 //
@@ -182,7 +185,7 @@ function stroke(x,y) {
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
     GU.viewMatrix = worldToBufferMatrix;
-    const r = 15;
+    const r = 5;
     let pp = sg.getCellOrbit([x,y]);
     pp.forEach(p=>{
         m4.scale(
@@ -190,7 +193,8 @@ function stroke(x,y) {
             [r,r], GU.tempMatrix);
         GU.filledSquare.draw(GU.texturedMaterial, {
             u_matrix: GU.tempMatrix,
-            u_texture: texture
+            u_texture: texture,
+            u_color: getCurrentColorRgba()
         })
     })
     gl.disable(gl.BLEND);
@@ -210,6 +214,11 @@ function setCurrentGroup(name) {
     sg.setCanvasSize(gl.canvas.width, gl.canvas.height, margin);
     worldToBufferMatrix = sg.getWorldToBufferMatrix();
     worldPolygon = sg.createWorldPolygon(gl, worldPolygon);
+}
+
+function setCurrentColor(color) {
+    currentColor = color;
+    
 }
 //
 // render
@@ -264,7 +273,8 @@ function render() {
     if(worldPolygon) {
         worldPolygon.draw(GU.texturedMaterial, { 
             u_matrix : viewMatrix, 
-            u_texture : offlineBuffer.attachments[0]
+            u_texture : offlineBuffer.attachments[0],
+            u_color: [1,1,1,1]
         });
         // translation cell
         GU.drawParallelogram(sg.cell[0], sg.a, sg.b, [0.5,0.5,0.5,1]);

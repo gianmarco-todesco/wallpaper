@@ -5,124 +5,69 @@
         <title>Wallpaper</title>
         <style>
             html, body {
-                overflow:hidden;
-                width:100%;
-                height:100%;
                 margin:0;
                 padding:0;
-                background-color: black;
-            }
-            #renderCanvas {
-                margin:20px;
-                width:800px;
-                height:600px;
-                border:solid 1px gray;
-                touch-action: none;
-
-            }
-            .control-panel {
-                user-select: none;
-                position:absolute;
-                border:solid 1px gray;
-                background-color: rgba(100,100,100,0.5);
-                border-radius: 5px;
-                padding:10px;
-                margin:20px;
-                display: flex;
-                flex-direction: row;
-            }
-            .column {
-                display: flex;
-                flex-direction: column;
-            }
-            #group-buttons {
-                right:10px;
-                top:10px;
-                width:220px;
-                height:170px;
-                
-            }
-            #group-buttons button {
-                font-size:14px;
-                font-family: 'Arial Narrow';
-                color:white;
-                border-radius: 4px;
-                border:solid 1px white;
-                background-color: #222;
-                width:40px;
-                height:30px;
-                margin:2px;
-            }
-            #group-buttons button:hover {
-                background-color: #444;
-            }
-            #group-buttons button:active {
-                background-color: black;
-            }
-            #group-buttons button.checked {
-                border:solid 1px rgb(199, 43, 43);
-            }
-            #toolbox {
-                right:10px;
-                top:420px;
-
-            }
-            .color-btn {
-                border: solid 1px white;
-                background-color: aqua;
-                width:20px;
-                height:20px;
-                margin:2px;
+                background-color: white;
             }
         </style>
+        <link rel="stylesheet" href="style.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/2.4.2/chroma.min.js"></script>
         <script src="twgl-full.js"></script>
         <script src="gutil.js"></script>
         <script src="symmetry-groups.js"></script>
+        <script src="controls.js"></script>
         <script src="main.js"></script>
     </head>
     <body>
-        <canvas id="renderCanvas"></canvas>
-        <div class="control-panel buttons-group" id="group-buttons">
-            <div class="column">
-                <button  id="P1-btn">P1</button>
-                <button  id="Pm-btn">Pm</button>
-                <button  id="Cm-btn">Cm</button>
-                <button  id="Pg-btn">Pg</button>
-
+        <div id="animation-container">
+            <canvas id="renderCanvas"></canvas>
+            <div class="control-panel buttons-group" id="group-buttons">
+                <div class="column">
+                    <button  id="P1-btn">P1</button>
+                    <button  id="Pm-btn">Pm</button>
+                    <button  id="Cm-btn">Cm</button>
+                    <button  id="Pg-btn">Pg</button>
+    
+                </div>
+                <div class="column">
+                    <button  id="P2-btn">P2</button>
+                    <button  id="Pmm-btn">Pmm</button>
+                    <button  id="Cmm-btn">Cmm</button>
+                    <button  id="Pmg-btn">Pmg</button>
+                    <button  id="Pgg-btn">Pgg</button>
+                </div>
+                <div class="column">
+                    <button  id="P3-btn">P3</button>
+                    <button  id="P31m-btn">P31m</button>
+                    <button  id="P3m1-btn">P3m1</button>
+                </div>
+                <div class="column">
+                    <button  id="P4-btn">P4</button>
+                    <button  id="P4g-btn">P4g</button>
+                    <button  id="P4m-btn">P4m</button>
+                </div>
+                <div class="column">
+                    <button  id="P6-btn">P6</button>
+                    <button  id="P6m-btn">P6m</button>
+                </div>
+    
+    
             </div>
-            <div class="column">
-                <button  id="P2-btn">P2</button>
-                <button  id="Pmm-btn">Pmm</button>
-                <button  id="Cmm-btn">Cmm</button>
-                <button  id="Pmg-btn">Pmg</button>
-                <button  id="Pgg-btn">Pgg</button>
+            <div class="control-panel" id="toolbox">
+                <div class="column">
+                    <button type="button" onclick="clearOfflineBuffer();">clear</button>
+    
+                </div>
+                <div class="column" id="colors">
+    
+                </div>
+    
             </div>
-            <div class="column">
-                <button  id="P3-btn">P3</button>
-                <button  id="P31m-btn">P31m</button>
-                <button  id="P3m1-btn">P3m1</button>
-            </div>
-            <div class="column">
-                <button  id="P4-btn">P4</button>
-                <button  id="P4g-btn">P4g</button>
-                <button  id="P4m-btn">P4m</button>
-            </div>
-            <div class="column">
-                <button  id="P6-btn">P6</button>
-                <button  id="P6m-btn">P6m</button>
-            </div>
-
-
+    
         </div>
-        <div class="control-panel" id="toolbox">
-            <div class="column">
-                <button type="button" onclick="clearOfflineBuffer();">clear</button>
 
-            </div>
-            <div class="column" id="colors">
-
-            </div>
-
-        </div>
+        <p>
+            uno
+        </p>
     </body>
 </html>

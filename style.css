@@ -1,0 +1,78 @@
+
+#renderCanvas {
+    box-sizing: border-box;
+    margin:0;
+    width:100%;
+    height:100%;
+    border:none;
+    touch-action: none;
+
+}
+.control-panel {
+    user-select: none;
+    position:absolute;
+    border:solid 1px gray;
+    background-color: rgba(100,100,100,0.5);
+    border-radius: 5px;
+    padding:10px;
+    margin:5px;
+    display: flex;
+    flex-direction: row;
+}
+.column {
+    display: flex;
+    flex-direction: column;
+}
+#group-buttons {
+    right:10px;
+    top:10px;
+    width:220px;
+    height:170px;
+    
+}
+#group-buttons button {
+    font-size:14px;
+    font-family: 'Arial Narrow';
+    color:white;
+    border-radius: 4px;
+    border:solid 1px white;
+    background-color: #222;
+    width:40px;
+    height:30px;
+    margin:2px;
+    padding:0;
+    box-sizing: border-box;
+}
+#group-buttons button:hover {
+    background-color: #444;
+}
+#group-buttons button:active {
+    background-color: black;
+}
+#group-buttons button.checked {
+    border:solid 1px rgb(199, 43, 43);
+}
+#toolbox {
+    right:10px;
+    top:260px;
+
+}
+.color-btn {
+    border: solid 2px white;
+    width:20px;
+    height:20px;
+    margin:2px;
+    box-sizing:border-box;
+    padding:0;
+}
+.color-btn.checked {
+    border: solid 2px red;
+}
+
+#animation-container {
+    box-sizing: content-box;
+    position:relative;
+    margin:0;
+    height:600px;
+    /* border:solid 1px green; */
+}
