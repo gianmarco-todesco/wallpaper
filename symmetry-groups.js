@@ -175,6 +175,7 @@ class SymmetryGroup {
         throw "not implemented";
     }
 
+
     wrapAroundUvs(uvs) {
         let L = [];
         const mrg = 0.05;
@@ -202,7 +203,7 @@ class SymmetryGroup {
     }
 }
 
-
+/*
 function createSymmetryGroup() {
     const sqrt3_2 = Math.sqrt(3)/2;
     sg = new SymmetryGroup();
@@ -211,12 +212,13 @@ function createSymmetryGroup() {
     sg.setVectors(va,vb);
     return sg;
 }
-
+*/
 
 class P1Group extends SymmetryGroup {
     constructor() {
         super();
         this.setVectors([200,0], [0,200]);
+        this.foundamentalDomain = [-1,-1,1,-1,-1,1,1,1];
     }
     getFoundamentalP(p) {
         let [u,v,uu,vv] = this.getUV(p);
@@ -227,7 +229,6 @@ class P1Group extends SymmetryGroup {
         let pp = this.wrapAroundUvs([[u,v]]);
         return pp.map(([u,v])=>this.getP(u,v));
     }
-
 }
 
 
@@ -235,6 +236,7 @@ class P2Group extends SymmetryGroup {
     constructor() {
         super();
         this.setVectors([200,0], [0,150]);
+        this.foundamentalDomain = [-1,-1,1,-1,1,1];
     }
     getFoundamentalP(p) {
         let [u,v,uu,vv] = this.getUV(p);
@@ -254,6 +256,7 @@ class PmGroup extends SymmetryGroup {
     constructor() {
         super();
         this.setVectors([200,0], [0,150]);
+        this.foundamentalDomain = [-1,-1,1,-1,-1,0,1,0];
     }
     getFoundamentalP(p) {
         let [u,v,uu,vv] = this.getUV(p);
@@ -265,7 +268,6 @@ class PmGroup extends SymmetryGroup {
         let pp = this.wrapAroundUvs([[u,v], [u,1-v]]);
         return pp.map(([u,v])=>this.getP(u,v));
     }
-
 }
 
 
@@ -273,6 +275,7 @@ class PgGroup extends SymmetryGroup {
     constructor() {
         super();
         this.setVectors([200,0], [0,150]);
+        this.foundamentalDomain = [-1,-1,0,-1,-1,1,0,1];
     }
     getFoundamentalP(p) {
         let [u,v,uu,vv] = this.getUV(p);
@@ -284,13 +287,14 @@ class PgGroup extends SymmetryGroup {
         let pp = this.wrapAroundUvs([[u,v], [1-u,v+0.5]]);
         return pp.map(([u,v])=>this.getP(u,v));
     }
-
 }
 
 class CmGroup extends SymmetryGroup {
     constructor() {
         super();
         this.setVectors([200,150], [-200,150]);
+        this.foundamentalDomain = [-1,-1,1,-1,-1,1];
+
     }
     getFoundamentalP(p) {
         let [u,v,uu,vv] = this.getUV(p);
@@ -310,6 +314,7 @@ class PmmGroup extends SymmetryGroup {
     constructor() {
         super();
         this.setVectors([200,0], [0,150]);
+        this.foundamentalDomain = [-1,-1,0,-1,-1,0,0,0];
     }
     getFoundamentalP(p) {
         let [u,v,uu,vv] = this.getUV(p);
@@ -330,6 +335,7 @@ class PmgGroup extends SymmetryGroup {
     constructor() {
         super();
         this.setVectors([200,0], [0,150]);
+        this.foundamentalDomain = [-1,-1,0,-1,-1,0,0,0];
     }
     getFoundamentalP(p) {
         let [u,v,uu,vv] = this.getUV(p);
@@ -352,6 +358,7 @@ class PggGroup extends SymmetryGroup {
     constructor() {
         super();
         this.setVectors([200,0], [0,150]);
+        this.foundamentalDomain = [0,-1,1,0,-1,0];
     }
     getFoundamentalP(p) {
         let [u,v,uu,vv] = this.getUV(p);
@@ -381,6 +388,7 @@ class CmmGroup extends SymmetryGroup {
     constructor() {
         super();
         this.setVectors([200,150], [-200,150]);
+        this.foundamentalDomain = [-1,-1,0,0,-1,1];
     }
     getFoundamentalP(p) {
         let [u,v,uu,vv] = this.getUV(p);
@@ -402,6 +410,7 @@ class P4Group extends SymmetryGroup {
     constructor() {
         super();
         this.setVectors([200,0], [0,200]);
+        this.foundamentalDomain = [-1,-1,0,-1,-1,0,0,0];
     }
     getFoundamentalP(p) {
         let [u,v,uu,vv] = this.getUV(p);
@@ -425,6 +434,7 @@ class P4mGroup extends SymmetryGroup {
     constructor() {
         super();
         this.setVectors([200,0], [0,200]);
+        this.foundamentalDomain = [-1,-1,0,-1,0,0];
     }
     getFoundamentalP(p) {
         let [u,v,uu,vv] = this.getUV(p);
@@ -453,6 +463,7 @@ class P4gGroup extends SymmetryGroup {
     constructor() {
         super();
         this.setVectors([200,0], [0,200]);
+        this.foundamentalDomain = [0,-1,0,0,-1,0];
     }
     getFoundamentalP(p) {
         let [u,v,uu,vv] = this.getUV(p);
@@ -481,6 +492,7 @@ class P3Group extends SymmetryGroup {
     constructor() {
         super();
         this.setVectors([200,0], [100,200*Math.sqrt(3)/2]);
+        this.foundamentalDomain = [1,-1,-1/3,-1/3,1/3,1/3,-1,1];
     }
     getFoundamentalP(p) {
         let [u,v,uu,vv] = this.getUV(p);
@@ -501,6 +513,7 @@ class P3m1Group extends SymmetryGroup {
     constructor() {
         super();
         this.setVectors([200,0], [100,200*Math.sqrt(3)/2]);
+        this.foundamentalDomain = [-1/3,-1/3,1/3,1/3,-1,1];
     }
     getFoundamentalP(p) {
         let [u,v,uu,vv] = this.getUV(p);
@@ -528,6 +541,7 @@ class P31mGroup extends SymmetryGroup {
     constructor() {
         super();
         this.setVectors([200,0], [100,200*Math.sqrt(3)/2]);
+        this.foundamentalDomain = [-1,-1,1,-1,-1/3,-1/3];
     }
     getFoundamentalP(p) {
         let [u,v,uu,vv] = this.getUV(p);
@@ -553,6 +567,7 @@ class P6Group extends SymmetryGroup {
     constructor() {
         super();
         this.setVectors([200,0], [100,200*Math.sqrt(3)/2]);
+        this.foundamentalDomain = [-1,-1,1,-1,-1/3,-1/3];
     }
     getFoundamentalP(p) {
         let [u,v,uu,vv] = this.getUV(p);
@@ -578,6 +593,7 @@ class P6mGroup extends SymmetryGroup {
     constructor() {
         super();
         this.setVectors([200,0], [100,200*Math.sqrt(3)/2]);
+        this.foundamentalDomain = [-1,-1,0,-1,-1/3,-1/3];
     }
     getFoundamentalP(p) {
         let [u,v,uu,vv] = this.getUV(p);
@@ -586,12 +602,13 @@ class P6mGroup extends SymmetryGroup {
     }
     getCellOrbit(p) {
         let [u,v,uu,vv] = this.getUV(p);
-        // misssing!!
-        let L = u+v < 1.0 
-            ? [[u,v], [1-u-v, u], [v, 1-u-v]]
-            : [[u,v], [2-u-v, u], [v, 2-u-v]];
+        // it is partial!!
+        if(u+v>1.0) { [u,v]=[1-u,1-v];}
+        let L = [[u,v], [1-u-v, u], [v, 1-u-v]];
         for(let i=0; i<3; i++) {
             let [uu,vv] = L[i];
+            L.push([vv,uu])
+            L.push([1-vv,1-uu])
             L.push([1-uu,1-vv])
         }
         let pp = this.wrapAroundUvs(L);
@@ -616,6 +633,7 @@ const groupTable = {
     'P3m1' : P3m1Group,
     'P31m' : P31mGroup,
     'P6' : P6Group,
+    'P6m': P6mGroup,
 }
 // #8
 

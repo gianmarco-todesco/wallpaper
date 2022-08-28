@@ -16,6 +16,7 @@ let sg;
 let canvasPos = [0,0];
 let currentColor = chroma.hsv(0,1,0.6);
 let downloadRequested = false;
+let groupsTable = {};
 
 function getCurrentColorRgba() {
     let rgb = currentColor.rgb();
@@ -215,12 +216,31 @@ function setCurrentGroup(name) {
     sg.setCanvasSize(gl.canvas.width, gl.canvas.height, margin);
     worldToBufferMatrix = sg.getWorldToBufferMatrix();
     worldPolygon = sg.createWorldPolygon(gl, worldPolygon);
+
 }
 
 function setCurrentColor(color) {
     currentColor = color;
-    
 }
+
+function getFoundamentalDomainBuffer() {
+    if(!sg) return null;
+    let gName = sg.constructor.name;
+    let buffer = groupsTable[gName];
+    if(buffer) return buffer;
+    let foundamentalDomain = sg.foundamentalDomain;
+    if(!foundamentalDomain) return null;
+    let shape = new Shape({gl, 
+        arrays: {
+            position: { numComponents:2, data: foundamentalDomain },
+        },
+        verb: gl.TRIANGLE_STRIP
+    });
+    groupsTable[gName] = shape;
+    return shape;
+}
+
+
 //
 // render
 //
@@ -256,6 +276,26 @@ function render() {
         
         // translation cell
         GU.drawParallelogram(sg.cell[0], sg.a, sg.b, [0.5,0.5,0.5,1]);
+
+        let foundamentalCellBuffer = getFoundamentalDomainBuffer();
+        if(foundamentalCellBuffer) {
+            let [x0,y0] = sg.cell[0];
+            const [ax,ay] = sg.a;
+            const [bx,by] = sg.b;
+            let matrix = m4.multiply(m4.multiply(
+                GU.viewMatrix,
+                [ax,ay,0,0, bx,by,0,0, 0,0,1,0, x0,y0,0,1]),
+                [0.5,0,0,0, 0,0.5,0,0, 0,0,1,0, 0.5,0.5,0,1]);
+            
+            gl.enable(gl.BLEND);
+            gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+            foundamentalCellBuffer.draw(GU.simpleMaterial, {
+                u_matrix : matrix,
+                u_color : [0.5,0.5,0.5,0.25]
+            })
+            gl.disable(gl.BLEND);
+        }
+
         const [u0,u1,v0,v1] = sg._computeUVRange();
 
         if(margin>0) {
@@ -270,7 +310,7 @@ function render() {
                 [ax*(u1-u0),ay*(u1-u0)],
                 [bx*(v1-v0),by*(v1-v0)],
                 [0.75,0.75,0.75,1]);
-            
+                        
             // canvas border (with margin)
             const mrg = margin;
             GU.drawRect(mrg,mrg,gl.canvas.width-mrg*2,gl.canvas.height-mrg*2, [1,0,0,1]);        
