@@ -15,6 +15,7 @@ let mousePos = [0,0];
 let sg;
 let canvasPos = [0,0];
 let currentColor = chroma.hsv(0,1,0.6);
+let downloadRequested = false;
 
 function getCurrentColorRgba() {
     let rgb = currentColor.rgb();
@@ -225,32 +226,7 @@ function setCurrentColor(color) {
 //
 function render() {
 
-    /*
-    const sqrt3_2 = Math.sqrt(3)/2;    
-    let r = 150;
-    let va = [r*Math.cos(phi),r*Math.sin(phi)];
-    let vb = [va[0]/2-va[1]*sqrt3_2, va[1]/2+va[0]*sqrt3_2];
-    sg.setVectors(va,vb);
-    */
-
-
     let matrix = m4.identity();
-
-
-    /*
-    // draw offline buffer
-    twgl.bindFramebufferInfo(gl, offlineBuffer);
-
-    gl.clearColor(0.8, 0.9, 0.9, 1);
-    gl.clear(gl.COLOR_BUFFER_BIT);
-  
-    //m4.translate(matrix, [-1+2*px/gl.canvas.width, -1 + 2*py/gl.canvas.height,0], matrix);
-    //m4.scale(matrix, [0.1,0.1,1], matrix)
-    //GU.dot.draw(GU.simpleMaterial, { u_matrix : matrix, u_color : [1,0,0,1]});
-    GU.viewMatrix = sg.getWorldToBufferMatrix();
-    GU.fillRect(px-10,py-10,20,20, [0,1,0,1])
-    */
-
 
     // draw canvas
     twgl.bindFramebufferInfo(gl);
@@ -276,6 +252,8 @@ function render() {
             u_texture : offlineBuffer.attachments[0],
             u_color: [1,1,1,1]
         });
+        if(downloadRequested) _doDownload();
+        
         // translation cell
         GU.drawParallelogram(sg.cell[0], sg.a, sg.b, [0.5,0.5,0.5,1]);
         const [u0,u1,v0,v1] = sg._computeUVRange();
@@ -310,180 +288,22 @@ function render() {
 
     }
 
-    /*
-    // cell/foundamental 
-    let uv = sg.getUV([px,py]);
-
-    let p2 = sg.getP(uv[0], uv[1]);
-    GU.drawDot(p2[0],p2[1],[0,1,1,1],15);
-
-    // current position
-    GU.drawDot(px,py,[1,0,1,1],10);
-    */
-
-
-  /*
-
-
-  m4.translate(viewMatrix, [px,py,0], matrix);
-  m4.scale(matrix, [10,10,1], matrix)
-  GU.dot.draw(GU.simpleMaterial, { u_matrix : matrix, u_color : [1,0,0,1]});
-
-  m4.translate(viewMatrix, [px+40,py,0], matrix);
-  m4.scale(matrix, [10,10,1], matrix)
-  GU.dot.draw(GU.simpleMaterial, { u_matrix : matrix, u_color : [0,1,0,1]});
-
-  gl.enable(gl.BLEND);
-  gl.blendFunc(gl.ONE, gl.ONE);
-  //gl.blendFunc(gl.ONE, gl.SRC_ALPHA);
-
-  // gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
-  m4.translate(viewMatrix, [120,120,0], matrix);
-  m4.scale(matrix, [100,100,1], matrix);
-  GU.dot.draw(GU.texturedMaterial, { u_matrix : matrix, u_texture : texture});
-  m4.translate(viewMatrix, [px+60,120,0], matrix);
-  m4.scale(matrix, [100,100,1], matrix);
-  GU.dot.draw(GU.texturedMaterial, { u_matrix : matrix, u_texture : texture});
-
-
-  m4.translate(viewMatrix, [400,300,0], matrix);
-  m4.scale(matrix, [100,100,1], matrix);
-  GU.dot.draw(GU.texturedMaterial, { u_matrix : matrix, u_texture : frameBufferInfo.attachments[0]});
-  
-  //gl.blendFunc(gl.ONE, gl.ZERO);
-  */
 
 }
 
 
 
-//
-// =======================================
-// end
-// =======================================
-//
+function download() {
+    downloadRequested = true;
+}
 
-function render2() {
+let downloadLink;
 
-
-  let y = ((px-x0)*va.y - (py-y0)*va.x) / (vb.x*va.y - vb.y*va.x);
-  let x = ((px-x0)*vb.y - (py-y0)*vb.x) / (va.x*vb.y - va.y*vb.x);  
-  x = x - Math.floor(x);
-  y = y - Math.floor(y);
-  let px1 = x0 + va.x * x + vb.x * y;
-  let py1 = y0 + va.y * x + vb.y * y;
-
-  mat2 = [va.x,va.y,0,0, vb.x,vb.y,0,0, 0,0,1,0, 0,0,0,1];
-  imat2 = m4.multiply([2,0,0,0, 0,2,0,0, 0,0,1,0, -1,-1,0,1], m4.inverse(mat2));
-
-
-  const uniforms = {
-    u_matrix: m4.identity(),
-    u_color: [1,1,0,1]
-    //u_texture: textures.tx
-  };
-
-  // disegna sul frame buffer
-
-  twgl.bindFramebufferInfo(gl, frameBufferInfo);
-
-  gl.useProgram(programInfo.program);
-  gl.clearColor(0.0, 0.0, 0.0, 1);
-  gl.clear(gl.COLOR_BUFFER_BIT);
-  twgl.setBuffersAndAttributes(gl, programInfo, innerPolygon);
-  uniforms.u_color = [0,1,1,1];
-  uniforms.u_matrix = m4.identity();
-  twgl.setUniforms(programInfo, uniforms);
-  twgl.drawBufferInfo(gl, innerPolygon, gl.TRIANGLE_STRIP);
-
-  twgl.setBuffersAndAttributes(gl, programInfo, dot);
-  uniforms.u_color = [0,0,1,1];
-  uniforms.u_matrix = m4.multiply(imat2, m4.translation([px1-x0, py1-y0, 0]));
-  twgl.setUniforms(programInfo, uniforms);
-  twgl.drawBufferInfo(gl, dot, gl.TRIANGLE_STRIP);
-
-  
-  // disegna su canvas
-  twgl.bindFramebufferInfo(gl);
-
-
-
-  
-
-  twgl.bindFramebufferInfo(gl);
-  twgl.resizeCanvasToDisplaySize(gl.canvas);
-  gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-  //gl.enable(gl.CULL_FACE);
-  gl.clearColor(0.8, 0.8, 0.8, 1);
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-  const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
-  // m4.ortho(-aspect, aspect, 1, -1, -1, 1, uniforms.u_matrix);
-  // console.log(uniforms.u_matrix);
-
-
-
-  /*
-  twgl.bindFramebufferInfo(gl, frameBufferInfo);
-
-  gl.useProgram(programInfo.program);
-  twgl.setBuffersAndAttributes(gl, programInfo, bufferInfo);
-  twgl.setUniforms(programInfo, uniforms);
-  twgl.drawBufferInfo(gl, bufferInfo, gl.TRIANGLES);
-
-  
-  twgl.bindFramebufferInfo(gl);
-
-  const uniforms2 = {
-    u_matrix: m4.identity(),
-    u_texture: frameBufferInfo.attachments[0]
-  };
-  gl.useProgram(programInfo2.program);
-  twgl.setBuffersAndAttributes(gl, programInfo2, bufferInfo2);
-  twgl.setUniforms(programInfo2, uniforms2);
-  twgl.drawBufferInfo(gl, bufferInfo2, gl.TRIANGLE_STRIP);
-  
-*/
-  const uniforms2 = {
-    u_matrix: m4.identity(),
-    u_texture: frameBufferInfo.attachments[0]
-  };
-  m4.ortho(0, gl.canvas.clientWidth, 0,  gl.canvas.clientHeight, -1, 1, uniforms2.u_matrix);
-  
-  gl.useProgram(programInfo2.program);
-  twgl.setBuffersAndAttributes(gl, programInfo2, worldPolygon);
-  twgl.setUniforms(programInfo2, uniforms2);
-  twgl.drawBufferInfo(gl, worldPolygon, gl.TRIANGLE_STRIP);
-
-
-  m4.ortho(0, gl.canvas.clientWidth, 0,  gl.canvas.clientHeight, -1, 1, uniforms.u_matrix);  
-  gl.useProgram(programInfo.program);
-  twgl.setBuffersAndAttributes(gl, programInfo, outline);
-  uniforms.u_color = [0,1,0,1];
-  twgl.setUniforms(programInfo, uniforms);
-  twgl.drawBufferInfo(gl, outline, gl.LINE_STRIP);
-
-  twgl.setBuffersAndAttributes(gl, programInfo, dot);
-  uniforms.u_color = [1,0,1,1];
-
-
-  let mat = m4.copy(uniforms.u_matrix);
-
-  m4.multiply(mat, m4.translation([px,py,0]) , uniforms.u_matrix);
-  twgl.setUniforms(programInfo, uniforms);
-  twgl.drawBufferInfo(gl, dot, gl.TRIANGLE_STRIP);
-
-
-
-
-  m4.multiply(mat, m4.translation([px1,py1,0]), uniforms.u_matrix);
-  twgl.setUniforms(programInfo, uniforms);
-  twgl.drawBufferInfo(gl, dot, gl.TRIANGLE_STRIP);
-  
-  /*
-  m4.multiply(mat, m4.multiply(mat2, m4.scaling([0.1,0.1,0.1])), uniforms.u_matrix);
-  twgl.setUniforms(programInfo, uniforms);
-  twgl.drawBufferInfo(gl, dot, gl.TRIANGLE_STRIP);
-  */
-
-  
+function _doDownload() {
+    downloadRequested = false;
+    let imgData = gl.canvas.toDataURL("image/png");
+    if(!downloadLink) downloadLink = document.createElement('a');
+    downloadLink.setAttribute('download', 'mosaico.png');
+    downloadLink.setAttribute('href', imgData);
+    downloadLink.click();
 }

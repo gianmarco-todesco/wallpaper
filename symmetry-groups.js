@@ -398,6 +398,207 @@ class CmmGroup extends SymmetryGroup {
 
 }
 
+class P4Group extends SymmetryGroup {
+    constructor() {
+        super();
+        this.setVectors([200,0], [0,200]);
+    }
+    getFoundamentalP(p) {
+        let [u,v,uu,vv] = this.getUV(p);
+        if(u>0.5 && v>0.5) { u=1-u;v=1-v; }
+        else if(u>0.5) { [u,v] = [v,1-u]; }
+        else if(v>0.5) { [u,v] = [1-v,u]; }
+        return this.getP(u,v);        
+    }
+    getCellOrbit(p) {
+        let [u,v,uu,vv] = this.getUV(p);
+        if(u>0.5 && v>0.5) { u=1-u;v=1-v; }
+        else if(u>0.5) { [u,v] = [v,1-u]; }
+        else if(v>0.5) { [u,v] = [1-v,u]; }
+        let pp = this.wrapAroundUvs([[u,v], [1-v,u], [v,1-u], [1-u,1-v]]);
+        return pp.map(([u,v])=>this.getP(u,v));
+    }
+
+}
+
+class P4mGroup extends SymmetryGroup {
+    constructor() {
+        super();
+        this.setVectors([200,0], [0,200]);
+    }
+    getFoundamentalP(p) {
+        let [u,v,uu,vv] = this.getUV(p);
+        if(u>0.5 && v>0.5) { u=1-u;v=1-v; }
+        else if(u>0.5) { [u,v] = [v,1-u]; }
+        else if(v>0.5) { [u,v] = [1-v,u]; }
+        if(u-v>0.0) { [u,v] = [v,u]; }
+        return this.getP(u,v);        
+    }
+    getCellOrbit(p) {
+        let [u,v,uu,vv] = this.getUV(p);
+        if(u>0.5 && v>0.5) { u=1-u;v=1-v; }
+        else if(u>0.5) { [u,v] = [v,1-u]; }
+        else if(v>0.5) { [u,v] = [1-v,u]; }
+        if(u-v>0.0) { [u,v] = [v,u]; }
+        let pp = this.wrapAroundUvs([
+            [u,v], [1-v,u], [v,1-u], [1-u,1-v],
+            [v,u], [1-u,v], [u,1-v], [1-v,1-u],
+        ]);
+        return pp.map(([u,v])=>this.getP(u,v));
+    }
+
+}
+
+class P4gGroup extends SymmetryGroup {
+    constructor() {
+        super();
+        this.setVectors([200,0], [0,200]);
+    }
+    getFoundamentalP(p) {
+        let [u,v,uu,vv] = this.getUV(p);
+        if(u>0.5 && v>0.5) { u=1-u;v=1-v; }
+        else if(u>0.5) { [u,v] = [v,1-u]; }
+        else if(v>0.5) { [u,v] = [1-v,u]; }
+        if(u+v>0.0) { [u,v] = [0.5-u,0.5-v]; }
+        return this.getP(u,v);        
+    }
+    getCellOrbit(p) {
+        let [u,v,uu,vv] = this.getUV(p);
+        if(u>0.5 && v>0.5) { u=1-u;v=1-v; }
+        else if(u>0.5) { [u,v] = [v,1-u]; }
+        else if(v>0.5) { [u,v] = [1-v,u]; }
+        if(u+v>0.5) { [u,v] = [0.5-v,0.5-u]; }
+        let pp = this.wrapAroundUvs([
+            [u,v], [1-v,u], [v,1-u], [1-u,1-v],
+            [0.5-v,0.5-u], [0.5+u,0.5-v], [0.5-u,0.5+v], [0.5+v,0.5+u],
+        ]);
+        return pp.map(([u,v])=>this.getP(u,v));
+    }
+
+}
+
+class P3Group extends SymmetryGroup {
+    constructor() {
+        super();
+        this.setVectors([200,0], [100,200*Math.sqrt(3)/2]);
+    }
+    getFoundamentalP(p) {
+        let [u,v,uu,vv] = this.getUV(p);
+        return this.getP(u,v);        
+    }
+    getCellOrbit(p) {
+        let [u,v,uu,vv] = this.getUV(p);
+
+         
+        let pp = this.wrapAroundUvs(u+v < 1.0 
+            ? [[u,v], [1-u-v, u], [v, 1-u-v]]
+            : [[u,v], [2-u-v, u], [v, 2-u-v]]);
+        return pp.map(([u,v])=>this.getP(u,v));
+    }
+}
+
+class P3m1Group extends SymmetryGroup {
+    constructor() {
+        super();
+        this.setVectors([200,0], [100,200*Math.sqrt(3)/2]);
+    }
+    getFoundamentalP(p) {
+        let [u,v,uu,vv] = this.getUV(p);
+        // misssing!!
+        return this.getP(u,v);        
+    }
+    getCellOrbit(p) {
+        let [u,v,uu,vv] = this.getUV(p);
+        // misssing!!
+
+        let L = u+v < 1.0 
+            ? [[u,v], [1-u-v, u], [v, 1-u-v]]
+            : [[u,v], [2-u-v, u], [v, 2-u-v]];
+        for(let i=0; i<3; i++) {
+            let [uu,vv] = L[i];
+            L.push([vv,uu])
+        }
+        let pp = this.wrapAroundUvs(L);
+        return pp.map(([u,v])=>this.getP(u,v));
+    }
+}
+
+
+class P31mGroup extends SymmetryGroup {
+    constructor() {
+        super();
+        this.setVectors([200,0], [100,200*Math.sqrt(3)/2]);
+    }
+    getFoundamentalP(p) {
+        let [u,v,uu,vv] = this.getUV(p);
+        // misssing!!
+        return this.getP(u,v);        
+    }
+    getCellOrbit(p) {
+        let [u,v,uu,vv] = this.getUV(p);
+        // misssing!!
+        let L = u+v < 1.0 
+            ? [[u,v], [1-u-v, u], [v, 1-u-v]]
+            : [[u,v], [2-u-v, u], [v, 2-u-v]];
+        for(let i=0; i<3; i++) {
+            let [uu,vv] = L[i];
+            L.push([1-vv,1-uu])
+        }
+        let pp = this.wrapAroundUvs(L);
+        return pp.map(([u,v])=>this.getP(u,v));
+    }
+}
+
+class P6Group extends SymmetryGroup {
+    constructor() {
+        super();
+        this.setVectors([200,0], [100,200*Math.sqrt(3)/2]);
+    }
+    getFoundamentalP(p) {
+        let [u,v,uu,vv] = this.getUV(p);
+        // misssing!!
+        return this.getP(u,v);        
+    }
+    getCellOrbit(p) {
+        let [u,v,uu,vv] = this.getUV(p);
+        // misssing!!
+        let L = u+v < 1.0 
+            ? [[u,v], [1-u-v, u], [v, 1-u-v]]
+            : [[u,v], [2-u-v, u], [v, 2-u-v]];
+        for(let i=0; i<3; i++) {
+            let [uu,vv] = L[i];
+            L.push([1-uu,1-vv])
+        }
+        let pp = this.wrapAroundUvs(L);
+        return pp.map(([u,v])=>this.getP(u,v));
+    }
+}
+
+class P6mGroup extends SymmetryGroup {
+    constructor() {
+        super();
+        this.setVectors([200,0], [100,200*Math.sqrt(3)/2]);
+    }
+    getFoundamentalP(p) {
+        let [u,v,uu,vv] = this.getUV(p);
+        // misssing!!
+        return this.getP(u,v);        
+    }
+    getCellOrbit(p) {
+        let [u,v,uu,vv] = this.getUV(p);
+        // misssing!!
+        let L = u+v < 1.0 
+            ? [[u,v], [1-u-v, u], [v, 1-u-v]]
+            : [[u,v], [2-u-v, u], [v, 2-u-v]];
+        for(let i=0; i<3; i++) {
+            let [uu,vv] = L[i];
+            L.push([1-uu,1-vv])
+        }
+        let pp = this.wrapAroundUvs(L);
+        return pp.map(([u,v])=>this.getP(u,v));
+    }
+}
+
 const groupTable = {
     'P1' : P1Group,
     'P2' : P2Group,
@@ -408,6 +609,13 @@ const groupTable = {
     'Pmg': PmgGroup,
     'Pgg': PggGroup,
     'Cmm': CmmGroup,
+    'P4' : P4Group,
+    'P4m': P4mGroup,
+    'P4g': P4gGroup,
+    'P3' : P3Group,
+    'P3m1' : P3m1Group,
+    'P31m' : P31mGroup,
+    'P6' : P6Group,
 }
 // #8
 
