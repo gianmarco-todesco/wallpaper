@@ -40,6 +40,53 @@ class Shape {
     }
 }
 
+class DynamicColoredShape {
+    constructor(options) {
+        const gl = this.gl = options.gl;
+        const maxN = options.n || 1000;
+        let pts = this.pts = new Float32Array(maxN*2);
+        let colors = this.colors = new Float32Array(maxN*4);        
+        this.bufferInfo = twgl.createBufferInfoFromArrays(gl, {
+            position: { numComponents: 2, data : pts },
+            color: { numComponents: 4, data : colors },            
+        });
+        this.verb = options.verb;
+        this.currentColor = [1,1,1,1];
+        this.idx = 0;
+    }
+
+    addLine(x0,y0,x1,y1) {
+        let i = this.idx;
+        this.pts[i*2] = x0;
+        this.pts[i*2+1] = y0;
+        this.pts[i*2+2] = x1;
+        this.pts[i*2+3] = y1;
+        for(let j=0;j<8;j++) this.colors[i*4+j] = this.currentColor[j%4];
+        this.idx += 2;
+    }
+
+    update() {
+        twgl.setAttribInfoBufferFromArray(gl, 
+            this.bufferInfo.attribs.a_position, 
+            this.pts);
+        twgl.setAttribInfoBufferFromArray(gl, 
+            this.bufferInfo.attribs.a_color, 
+            this.colors);    
+    }
+
+    draw(material, uniforms) {
+        if(this.idx < 2) return;
+        gl.useProgram(material.programInfo.programInfo.program);
+        twgl.setBuffersAndAttributes(
+            this.gl, 
+            material.programInfo.programInfo, 
+            this.bufferInfo);
+        for(let u in uniforms) material.uniforms[u] = uniforms[u];
+        twgl.setUniforms(material.programInfo.programInfo, material.uniforms);
+        twgl.drawBufferInfo(this.gl, this.bufferInfo, this.verb, this.idx);
+    }
+}
+
 function createPrograms(gl) {
     GU.simpleMaterial = new Material({gl, 
         vs: `
@@ -61,6 +108,28 @@ function createPrograms(gl) {
             u_color : [0,0,0,1]
         }
         
+    });
+    GU.coloredMaterial = new Material({gl, 
+        vs: `
+        uniform mat4 u_matrix;
+        attribute vec2 a_position;
+        attribute vec4 a_color;
+        varying vec4 v_color;
+        void main() {
+          gl_Position = u_matrix * vec4(a_position, 0, 1);
+          v_color = a_color;
+        }
+        `,
+        fs:`
+        precision mediump float;
+        varying vec4 v_color;
+        void main() {
+          gl_FragColor = v_color;
+        }
+        `,
+        uniforms:{
+            u_matrix : twgl.m4.identity()
+        }        
     });
 
     GU.texturedMaterial = new Material({gl, 

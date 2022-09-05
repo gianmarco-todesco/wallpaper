@@ -201,6 +201,42 @@ class SymmetryGroup {
         );
         return m4.inverse(matrix);
     }
+
+    _addRCenter(shape, u, v, dd) {
+        let m = dd.length/2;
+        const [x,y] = this.getP(u,v);
+        for(let i=0; i<m; i++) {
+            let i1 = (i+1)%m;
+            shape.addLine(x+dd[i*2],y+dd[i*2+1],x+dd[i1*2],y+dd[i1*2+1]);
+        }
+    }
+
+    _addR2Center(shape, u, v) {
+        const r0 = 5, r1 = 7;
+        this._addRCenter(shape, u, v, [0,-r1, r0,0, 0,r1, -r0,0]);
+    }
+    _addR3Center(shape, u, v) {
+        const [x,y] = this.getP(u,v);
+        const r = 6, dx = r * 3/2 / (Math.sqrt(3)/2) / 2;
+        this._addRCenter(shape, u, v, [0,-r, dx,r/2, -dx,r/2]);
+    }
+    _addR4Center(shape, u, v) {
+        const [x,y] = this.getP(u,v);
+        const r = 4;
+        this._addRCenter(shape, u, v, [-r,-r, r,-r, r,r, -r,r]);
+    }
+    _addR6Center(shape, u, v) {
+        const [x,y] = this.getP(u,v);
+        const r = 7;
+        const pts = [];
+        for(let i=0;i<6;i++) {
+            let phi = Math.PI*2*i/6;
+            pts.push(r*Math.cos(phi), r*Math.sin(phi));
+        }
+        this._addRCenter(shape, u, v, pts);
+    }
+    addEntities(shape) {
+    }
 }
 
 /*
@@ -248,6 +284,10 @@ class P2Group extends SymmetryGroup {
         let pp = this.wrapAroundUvs([[u,v], [1-u,1-v]]);
         return pp.map(([u,v])=>this.getP(u,v));
     }
+    addEntities(shape) {
+        this._addR2Center(shape, 0.5, 0.5);
+    }
+
 
 }
 

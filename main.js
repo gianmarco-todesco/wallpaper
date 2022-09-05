@@ -17,6 +17,7 @@ let canvasPos = [0,0];
 let currentColor = chroma.hsv(0,1,0.6);
 let downloadRequested = false;
 let groupsTable = {};
+let prova;
 
 function getCurrentColorRgba() {
     let rgb = currentColor.rgb();
@@ -122,7 +123,12 @@ function initialize() {
 
   initPointerEvents(gl.canvas);
   initButtons();
+
+
+
+  prova = new DynamicColoredShape({ gl, n: 1000, verb: gl.LINES});
 }
+
 
 //
 // clearOfflineBuffer
@@ -327,6 +333,15 @@ function render() {
         */
 
     }
+
+    let radius = 100; // 50+40*Math.sin(performance.now()*0.001);
+
+    prova.idx = 0;
+    sg.addEntities(prova);
+    prova.update();    
+    prova.draw(GU.coloredMaterial, { u_matrix: GU.viewMatrix});
+    
+    
 
 
 }
