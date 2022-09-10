@@ -6,6 +6,7 @@ class SymmetryGroup {
         this.canvasWidth = 400;
         this.canvasHeight = 300;
         this.canvasMargin = 0;
+        this.generatorSymbols = [];
     }
 
     setVectors(a,b) {
@@ -211,31 +212,54 @@ class SymmetryGroup {
         }
     }
 
-    _addR2Center(shape, u, v) {
+    _addR2(shape, u, v) {
         const r0 = 5, r1 = 7;
+        shape.setColor(1,0.5,0.5);
         this._addRCenter(shape, u, v, [0,-r1, r0,0, 0,r1, -r0,0]);
     }
-    _addR3Center(shape, u, v) {
+    _addR3(shape, u, v) {
         const [x,y] = this.getP(u,v);
         const r = 6, dx = r * 3/2 / (Math.sqrt(3)/2) / 2;
+        shape.setColor(1,0.5,0.5);
         this._addRCenter(shape, u, v, [0,-r, dx,r/2, -dx,r/2]);
     }
-    _addR4Center(shape, u, v) {
+    _addR4(shape, u, v) {
         const [x,y] = this.getP(u,v);
         const r = 4;
+        shape.setColor(1,0.5,0.5);
         this._addRCenter(shape, u, v, [-r,-r, r,-r, r,r, -r,r]);
     }
-    _addR6Center(shape, u, v) {
+    _addR6(shape, u, v) {
         const [x,y] = this.getP(u,v);
         const r = 7;
         const pts = [];
+        shape.setColor(1,0.5,0.5);
         for(let i=0;i<6;i++) {
             let phi = Math.PI*2*i/6;
             pts.push(r*Math.cos(phi), r*Math.sin(phi));
         }
         this._addRCenter(shape, u, v, pts);
     }
+    _addM(shape, u0,v0, u1,v1) {
+        const [x0,y0] = this.getP(u0,v0);
+        const [x1,y1] = this.getP(u1,v1);
+        shape.setColor(1,0.1,0.5);
+        shape.addLine(x0,y0,x1,y1);
+    }
+    _addG(shape, u0,v0, u1,v1) {
+        const [x0,y0] = this.getP(u0,v0);
+        const [x1,y1] = this.getP(u1,v1);
+        shape.setColor(1,0.5,1.0);
+        shape.addLine(x0,y0,x1,y1);
+    }
     addEntities(shape) {
+        this.generatorSymbols.forEach(gs => {
+            let methodName = "_add" + gs[0];
+            let method = this[methodName];
+            if(typeof method == "function") {
+                method.apply(this, [shape, ...gs.slice(1)]);
+            }            
+        });
     }
 }
 
@@ -273,6 +297,10 @@ class P2Group extends SymmetryGroup {
         super();
         this.setVectors([200,0], [0,150]);
         this.foundamentalDomain = [-1,-1,1,-1,1,1];
+        this.generatorSymbols = [
+            ["R2",0,0], ["R2",0.5,0], ["R2",1,0], 
+            ["R2",0.5,0.5], ["R2",1,0.5], ["R2",1,1], 
+        ];
     }
     getFoundamentalP(p) {
         let [u,v,uu,vv] = this.getUV(p);
@@ -284,8 +312,8 @@ class P2Group extends SymmetryGroup {
         let pp = this.wrapAroundUvs([[u,v], [1-u,1-v]]);
         return pp.map(([u,v])=>this.getP(u,v));
     }
-    addEntities(shape) {
-        this._addR2Center(shape, 0.5, 0.5);
+    getGeneratorSymbols() {
+
     }
 
 
@@ -297,6 +325,10 @@ class PmGroup extends SymmetryGroup {
         super();
         this.setVectors([200,0], [0,150]);
         this.foundamentalDomain = [-1,-1,1,-1,-1,0,1,0];
+        this.generatorSymbols = [
+            ["M",0,0,1,0],
+            ["M",0,0.5,1,0.5]
+        ]
     }
     getFoundamentalP(p) {
         let [u,v,uu,vv] = this.getUV(p);
@@ -315,7 +347,12 @@ class PgGroup extends SymmetryGroup {
     constructor() {
         super();
         this.setVectors([200,0], [0,150]);
-        this.foundamentalDomain = [-1,-1,0,-1,-1,1,0,1];
+        this.foundamentalDomain = [-1,-1, 1,-1, -1,0,1,0];
+        this.generatorSymbols = [
+            ["G",0,0,0,0.5],
+            ["G",0.5,0,0.5,0.5],
+            ["G",1,0,1,0.5],
+        ]
     }
     getFoundamentalP(p) {
         let [u,v,uu,vv] = this.getUV(p);
@@ -334,7 +371,11 @@ class CmGroup extends SymmetryGroup {
         super();
         this.setVectors([200,150], [-200,150]);
         this.foundamentalDomain = [-1,-1,1,-1,-1,1];
-
+        this.generatorSymbols = [
+            ["M",1,0,0,1],
+            ["M",-0.1,0.1,0.1,-0.1],
+            ["G",0.5,0,0,0.5]
+        ]
     }
     getFoundamentalP(p) {
         let [u,v,uu,vv] = this.getUV(p);
@@ -355,6 +396,16 @@ class PmmGroup extends SymmetryGroup {
         super();
         this.setVectors([200,0], [0,150]);
         this.foundamentalDomain = [-1,-1,0,-1,-1,0,0,0];
+        this.generatorSymbols = [
+            ["R2",0, 0],
+            ["R2",0, 0.5],
+            ["R2",0.5, 0],
+            ["R2",0.5, 0.5],
+            ["M",0,0,0.5,0],
+            ["M",0,0.5,0.5,0.5],
+            ["M",0,0,0,0.5],
+            ["M",0.5,0,0.5,0.5],            
+        ]
     }
     getFoundamentalP(p) {
         let [u,v,uu,vv] = this.getUV(p);
@@ -376,6 +427,15 @@ class PmgGroup extends SymmetryGroup {
         super();
         this.setVectors([200,0], [0,150]);
         this.foundamentalDomain = [-1,-1,0,-1,-1,0,0,0];
+        this.generatorSymbols = [
+            ["R2",0.0,0.25],
+            ["R2",0.5,0.25],
+            ["M",0,0,0.5,0],
+            ["M",0,0.5,0.5,0.5],
+            ["G",0,0,0,0.5],
+            ["G",0.5,0,0.5,0.5],
+            
+        ]
     }
     getFoundamentalP(p) {
         let [u,v,uu,vv] = this.getUV(p);
@@ -399,6 +459,16 @@ class PggGroup extends SymmetryGroup {
         super();
         this.setVectors([200,0], [0,150]);
         this.foundamentalDomain = [0,-1,1,0,-1,0];
+        this.generatorSymbols = [
+            ["R2", 0.5, 0.5],
+            ["R2", 0.0, 0.5],
+            ["R2", 1.0, 0.5],
+            ["R2", 0.5, 0.0],
+            ["G",1/4,1/4,3/4,1/4],
+            ["G",1/4,1/4,1/4,1/2],
+            ["G",3/4,1/4,3/4,1/2],
+            
+        ]
     }
     getFoundamentalP(p) {
         let [u,v,uu,vv] = this.getUV(p);
@@ -429,6 +499,17 @@ class CmmGroup extends SymmetryGroup {
         super();
         this.setVectors([200,150], [-200,150]);
         this.foundamentalDomain = [-1,-1,0,0,-1,1];
+        this.generatorSymbols = [
+            ["R2", 0.0, 0.0],
+            ["R2", 0.0, 1.0],
+            ["R2", 0.5, 0.5],
+            ["R2", 0.0, 0.5],
+            ["M", 0,1,0.5,0.5],
+            ["M", 0,0,0.5,0.5],
+            ["G", 0,0.5,1/4,3/4],
+            ["G", 0,0.5,1/4,1/4],
+            
+        ]
     }
     getFoundamentalP(p) {
         let [u,v,uu,vv] = this.getUV(p);
@@ -451,6 +532,12 @@ class P4Group extends SymmetryGroup {
         super();
         this.setVectors([200,0], [0,200]);
         this.foundamentalDomain = [-1,-1,0,-1,-1,0,0,0];
+        this.generatorSymbols = [
+            ["R4", 0.5, 0.5],
+            ["R4", 0.0, 0.0],
+            ["R2", 0.0, 0.5],
+            ["R2", 0.5, 0.0],
+        ]
     }
     getFoundamentalP(p) {
         let [u,v,uu,vv] = this.getUV(p);
@@ -475,6 +562,15 @@ class P4mGroup extends SymmetryGroup {
         super();
         this.setVectors([200,0], [0,200]);
         this.foundamentalDomain = [-1,-1,0,-1,0,0];
+        this.generatorSymbols = [
+            ["R4", 0.5, 0.5],
+            ["R4", 0.0, 0.0],
+            ["R2", 0.5, 0.0],
+            ["M",0,0,0.5,0],
+            ["M",0.5,0,0.5,0.5],
+            ["M",0.5,0.5,0,0],
+            ["G",0.5,0,0.25,0.25]
+        ]
     }
     getFoundamentalP(p) {
         let [u,v,uu,vv] = this.getUV(p);
@@ -504,6 +600,16 @@ class P4gGroup extends SymmetryGroup {
         super();
         this.setVectors([200,0], [0,200]);
         this.foundamentalDomain = [0,-1,0,0,-1,0];
+        this.generatorSymbols = [
+            ["R4", 0.5, 0.5],
+            ["R2", 0.0, 0.5],
+            ["R2", 0.5, 0.0],
+            ["M",0.5,0,0,0.5],
+            ["G",0.25,0.25,0.5,0.5],
+            ["G",0.25,0.25,0.25,0.5],
+            ["G",0.25,0.25,0.5,0.25],
+            
+        ]
     }
     getFoundamentalP(p) {
         let [u,v,uu,vv] = this.getUV(p);
@@ -533,6 +639,12 @@ class P3Group extends SymmetryGroup {
         super();
         this.setVectors([200,0], [100,200*Math.sqrt(3)/2]);
         this.foundamentalDomain = [1,-1,-1/3,-1/3,1/3,1/3,-1,1];
+        this.generatorSymbols = [
+            ["R3", 1.0, 0.0],
+            ["R3", 0.0, 1.0],
+            ["R3", 1/3, 1/3],
+            ["R3", 2/3, 2/3],
+        ]
     }
     getFoundamentalP(p) {
         let [u,v,uu,vv] = this.getUV(p);
@@ -554,6 +666,17 @@ class P3m1Group extends SymmetryGroup {
         super();
         this.setVectors([200,0], [100,200*Math.sqrt(3)/2]);
         this.foundamentalDomain = [-1/3,-1/3,1/3,1/3,-1,1];
+        this.generatorSymbols = [
+            ["R3", 0.0, 1.0],
+            ["R3", 1/3, 1/3],
+            ["R3", 2/3, 2/3],
+            ["M",0,1,1/3,1/3],
+            ["M",1/3,1/3,2/3,2/3],
+            ["M",2/3,2/3,0,1],
+            ["G",1/6,2/3,1/2,1/2],
+            ["G",1/2,1/2,1/3,5/6],
+            ["G",1/3,5/6,1/6,2/3],            
+        ]
     }
     getFoundamentalP(p) {
         let [u,v,uu,vv] = this.getUV(p);
@@ -582,6 +705,17 @@ class P31mGroup extends SymmetryGroup {
         super();
         this.setVectors([200,0], [100,200*Math.sqrt(3)/2]);
         this.foundamentalDomain = [-1,-1,1,-1,-1/3,-1/3];
+        this.generatorSymbols = [
+            ["R3", 0.0, 0.0],
+            ["R3", 1.0, 0.0],
+            ["R3", 1/3, 1/3],
+            ["M",0,0,1,0],
+            ["G",1/2,0,1/4,1/4],
+            ["G",1/2,0,1/2,1/4],
+            
+            
+        ]
+
     }
     getFoundamentalP(p) {
         let [u,v,uu,vv] = this.getUV(p);
@@ -608,6 +742,13 @@ class P6Group extends SymmetryGroup {
         super();
         this.setVectors([200,0], [100,200*Math.sqrt(3)/2]);
         this.foundamentalDomain = [-1,-1,1,-1,-1/3,-1/3];
+        this.generatorSymbols = [
+            ["R6", 0.0, 0.0],
+            ["R6", 1.0, 0.0],
+            ["R3", 1/3, 1/3],
+            ["R2", 0.5, 0],            
+        ]
+
     }
     getFoundamentalP(p) {
         let [u,v,uu,vv] = this.getUV(p);
@@ -634,6 +775,19 @@ class P6mGroup extends SymmetryGroup {
         super();
         this.setVectors([200,0], [100,200*Math.sqrt(3)/2]);
         this.foundamentalDomain = [-1,-1,0,-1,-1/3,-1/3];
+        this.generatorSymbols = [
+            ["R6", 0.0, 0.0],
+            ["R3", 1/3, 1/3],
+            ["R2", 0.5, 0],
+            ["M",0,0,1/3,1/3],
+            ["M",1/3,1/3,1/2,0],
+            ["M",1/2,0,0,0],
+            ["G",1/4,0,1/6,1/6],
+            ["G",1/2,0,1/6,1/6],
+            ["G",1/2,0,1/4,1/4],
+            
+            
+        ]
     }
     getFoundamentalP(p) {
         let [u,v,uu,vv] = this.getUV(p);

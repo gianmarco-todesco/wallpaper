@@ -55,6 +55,12 @@ class DynamicColoredShape {
         this.idx = 0;
     }
 
+    setColor(r,g,b,a=1) {
+        this.currentColor[0]=r;
+        this.currentColor[1]=g;
+        this.currentColor[2]=b;
+        this.currentColor[3]=a;
+    }
     addLine(x0,y0,x1,y1) {
         let i = this.idx;
         this.pts[i*2] = x0;
