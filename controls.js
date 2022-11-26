@@ -1,4 +1,7 @@
+"use strict";
 let infoPanel;
+if(!window.assetFolder) window.assetFolder = "examples";
+// assets/wallpaper
 
 // P1,Pm,Cm,Pg,P2,Pmm,Cmm,Pmg,Pgg,
 // P3,P31m,P3m1,P4,P4g,P4m,P6,P6m
@@ -42,10 +45,14 @@ function createButtonBar(container) {
     btn.onclick = clearOfflineBuffer;
     btn = createButton("download", toolbox);
     btn.onclick = download;
+    btn = createButton("undo", toolbox);
+    btn.onclick = ()=>undo();
+    btn = createButton("redo", toolbox);
+    btn.onclick = ()=>redo();
+    
     let span = document.createElement('span');
     span.innerHTML = "|";
     
-
     const m = 10;
     let colors = chroma.scale('Spectral').colors(m, null);
     for(let i=0;i<m;i++) {
@@ -123,7 +130,7 @@ class GroupControlPanel {
         let info = groupsData[groupName];
         if(info && info.exampleCount>0) {
             this.examples.innerHTML = [...Array(info.exampleCount).keys()]
-                .map(i=>`<img src="/assets/wallpaper/${groupName.toLowerCase()}_${i+1}.png"/>`)
+                .map(i=>`<img src="${assetFolder}/${groupName.toLowerCase()}_${i+1}.png"/>`)
                 .join(" ");
         } else {
             this.examples.innerHTML = "";

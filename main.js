@@ -1,4 +1,5 @@
 'use strict';
+
 const m4 = twgl.m4;
 let gl;
 let bufferInfo, bufferInfo2;
@@ -8,7 +9,7 @@ let texture, uff;
 let px = 200, py = 250;
 let mouseDown = false;
 let worldPolygon;
-let phi = 0.2; // 2.18; // performance.now()*0.00002;  
+let phi = 0.2; 
 const margin = 0;
 let mousePos = [0,0];
 let sg;
@@ -19,13 +20,15 @@ let prova;
 let downloadLink;
 
 // --------------------------------------------------------
-
+/*
 function getCurrentColorRgba() {
     let rgb = currentColor.rgb();
     return [rgb[0]/255,rgb[1]/255,rgb[2]/255,1];
 }
 
 // --------------------------------------------------------
+*/
+
 
 function createDynamicTexture() {
   const attachments = [
@@ -39,11 +42,8 @@ function createDynamicTexture() {
   offlineBuffer = twgl.createFramebufferInfo(gl, attachments, 1024, 1024);
   let status = gl.checkFramebufferStatus(gl.FRAMEBUFFER);
   if(status != gl.FRAMEBUFFER_COMPLETE){
-    console.log("Invalid framebuffer");
-  } else{
-    console.log("Success creating framebuffer");
-  }
-
+    console.warn("Could not create framebuffer");
+  } 
 }
 
 // --------------------------------------------------------
@@ -126,7 +126,7 @@ function initPointerEvents(canvas) {
       // console.log(e);
         mouseDown = true;
         [px,py] = [e.clientX + dx, gl.canvas.height - (e.clientY + dy)];
-        if(sg) rstroke(px,py);
+        if(sg) beginStroke(px,py);
         document.addEventListener('pointermove', onPointerDrag);
         document.addEventListener('pointerup', onPointerUp);        
     });   
@@ -134,16 +134,7 @@ function initPointerEvents(canvas) {
     function onPointerDrag(e) {   
         let [oldx,oldy] = [px,py];     
         [px,py] = [e.clientX + dx, gl.canvas.height - (e.clientY + dy)];
-        if(mouseDown) {
-            let d = Math.sqrt((px-oldx)**2+(py-oldy)**2);
-            if(d>3) {
-                for(let t=0.0; t<d; t+=3) {
-                    rstroke(oldx+(px-oldx)*t/d,oldy+(py-oldy)*t/d);                
-                }
-            }
-            rstroke(px,py);            
-
-        }
+        if(mouseDown) dragStroke(px,py);
     }
     
     function onPointerUp(e) {
