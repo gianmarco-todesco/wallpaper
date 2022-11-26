@@ -70,6 +70,42 @@ class DynamicColoredShape {
         for(let j=0;j<8;j++) this.colors[i*4+j] = this.currentColor[j%4];
         this.idx += 2;
     }
+    addDashLine(x0,y0,x1,y1) {
+        let dashLength = 5;
+        let e0x=x1-x0, e0y=y1-y0; 
+        let d = Math.sqrt(e0x*e0x+e0y*e0y);
+        e0x /= d; e0y /= d;
+        let t = 0.0;
+        while(t<d) {
+            let t2 = Math.min(d, t + dashLength);
+            this.addLine(x0 + e0x*t, y0 + e0y*t, x0 + e0x*t2, y0 + e0y*t2);
+            t += 2*dashLength;
+        }
+    }
+    addZigZagLine(x0,y0,x1,y1) {
+        let dashLength = 1.5;
+        let e0x=x1-x0, e0y=y1-y0; 
+        let d = Math.sqrt(e0x*e0x+e0y*e0y);
+        e0x /= d; e0y /= d;
+        let e1x = -e0y, e1y = e0x;
+        let t = 0.0;
+        let x = x0, y = y0;
+        let sgn = 1;
+        while(t<d) {
+            if(t + dashLength>=d) {
+                this.addLine(x,y,x1,y1);
+                break;
+            }
+            let t2 = t + dashLength;
+            let px = x0 + t2*e0x + sgn*dashLength*e1x;
+            let py = y0 + t2*e0y + sgn*dashLength*e1y;            
+            this.addLine(x,y,px,py);
+            t += 2*dashLength;
+            x=px; y=py;
+            sgn = -sgn;
+        }
+    }
+    
 
     update() {
         twgl.setAttribInfoBufferFromArray(gl, 

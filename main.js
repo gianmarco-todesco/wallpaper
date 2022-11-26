@@ -1,7 +1,6 @@
 'use strict';
 const m4 = twgl.m4;
 let gl;
-let programInfo, programInfo2;
 let bufferInfo, bufferInfo2;
 let offlineBuffer;
 let worldToBufferMatrix;
@@ -13,29 +12,20 @@ let phi = 0.2; // 2.18; // performance.now()*0.00002;
 const margin = 0;
 let mousePos = [0,0];
 let sg;
-let canvasPos = [0,0];
-let currentColor = chroma.hsv(0,1,0.6);
+// let canvasPos = [0,0];
 let downloadRequested = false;
 let groupsTable = {};
 let prova;
+let downloadLink;
+
+// --------------------------------------------------------
 
 function getCurrentColorRgba() {
     let rgb = currentColor.rgb();
     return [rgb[0]/255,rgb[1]/255,rgb[2]/255,1];
 }
-//
-// computeCanvasPos
-// 
-function computeCanvasPos() {
-  let el = gl.canvas;
-  canvasPos[0] = 0;
-  canvasPos[1] = 0;
-  while(el) {
-    canvasPos[0] += el.offsetLeft;
-    canvasPos[1] += el.offsetTop;
-    el = el.parentElement;    
-  }
-}
+
+// --------------------------------------------------------
 
 function createDynamicTexture() {
   const attachments = [
@@ -56,101 +46,74 @@ function createDynamicTexture() {
 
 }
 
+// --------------------------------------------------------
 //
 // Document loaded
 //
 document.addEventListener('DOMContentLoaded', ()=>{
-  initialize();
-
+    initialize();
     function animate() {
-      render();
-      requestAnimationFrame(animate);
+        render();
+        requestAnimationFrame(animate);
     }
     animate();
 });
 
+// --------------------------------------------------------
 // resize
 window.addEventListener('resize', (event) => {
   twgl.resizeCanvasToDisplaySize(gl.canvas);
   sg.setCanvasSize(gl.canvas.width, gl.canvas.height, margin);    
   worldToBufferMatrix = sg.getWorldToBufferMatrix();
   worldPolygon = sg.createWorldPolygon(gl, worldPolygon);
-  computeCanvasPos();
+  // computeCanvasPos();
 });
 
+// --------------------------------------------------------
 //
 // initialize
 //
 function initialize() {
-  twgl.setDefaults({attribPrefix: "a_"});
-  gl = document.getElementById("renderCanvas").getContext("webgl", {
-    alpha: false,
-    antialias: true,
-  });
-  twgl.resizeCanvasToDisplaySize(gl.canvas);
+    twgl.setDefaults({attribPrefix: "a_"});
+    gl = document.getElementById("renderCanvas").getContext("webgl", {
+        alpha: false,
+        antialias: true,
+    });
+    twgl.resizeCanvasToDisplaySize(gl.canvas);
 
-  GU.init(gl);
+    GU.init(gl);
   
-  // createShapes2();
-
-  createDynamicTexture();
+    createDynamicTexture();
     //gl.enable(gl.CULL_FACE);
-
-  // clear offline buffer  
-  gl.clearColor(0.0, 0.0, 0.0, 1);
-  gl.clear(gl.COLOR_BUFFER_BIT);
-
-
-  let textureCanvas = GU.createBlurredDotTexture();
-  texture = twgl.createTexture(gl, {
-    src: textureCanvas,
-    min: gl.LINEAR,
-  });
-
-
-  /*
-  function updateTexture() {
-      gl.bindTexture(gl.TEXTURE_2D, textures.tx);
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,gl.RGBA, gl.UNSIGNED_BYTE, txCtx.canvas);
-  }
-  */
-
-  //sg = createSymmetryGroup();
-  //sg.setCanvasSize(gl.canvas.width, gl.canvas.height, margin)
-  //worldToBufferMatrix = sg.getWorldToBufferMatrix();
-  computeCanvasPos();
-  setCurrentGroup("P1");
-
-  initPointerEvents(gl.canvas);
-  initButtons();
-
-
-
-  prova = new DynamicColoredShape({ gl, n: 1000, verb: gl.LINES});
-}
-
-
-//
-// clearOfflineBuffer
-//
-function clearOfflineBuffer() {
-    // draw offline buffer
-    twgl.bindFramebufferInfo(gl, offlineBuffer);
+    // clear offline buffer  
     gl.clearColor(0.0, 0.0, 0.0, 1);
     gl.clear(gl.COLOR_BUFFER_BIT);
+
+    let textureCanvas = GU.createBlurredDotTexture();
+    texture = twgl.createTexture(gl, {
+        src: textureCanvas,
+        min: gl.LINEAR,
+    });
+    /*
+    function updateTexture() {
+        gl.bindTexture(gl.TEXTURE_2D, textures.tx);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,gl.RGBA, gl.UNSIGNED_BYTE, txCtx.canvas);
+    }
+    */
+
+    setCurrentGroup("P1");
+
+    initPointerEvents(gl.canvas);
+    createControls();
+    initButtons();
+
+    prova = new DynamicColoredShape({ gl, n: 1000, verb: gl.LINES});
 }
 
 
-//
-// getMousePos
-// 
-function getMousePos(e) {
-    let x = e.clientX - canvasPos[0];
-    let y = gl.canvas.height - (e.clientY - canvasPos[1]);
-  
-    return [x,y];
-}
 
+
+// --------------------------------------------------------
 //
 // initPointerEvents
 // 
@@ -160,17 +123,27 @@ function initPointerEvents(canvas) {
         dx = e.offsetX - e.clientX;
         dy = e.offsetY - e.clientY;
         
-      console.log(e);
+      // console.log(e);
         mouseDown = true;
         [px,py] = [e.clientX + dx, gl.canvas.height - (e.clientY + dy)];
-        if(sg) stroke(px,py);
+        if(sg) rstroke(px,py);
         document.addEventListener('pointermove', onPointerDrag);
         document.addEventListener('pointerup', onPointerUp);        
     });   
 
-    function onPointerDrag(e) {        
+    function onPointerDrag(e) {   
+        let [oldx,oldy] = [px,py];     
         [px,py] = [e.clientX + dx, gl.canvas.height - (e.clientY + dy)];
-        if(mouseDown) stroke(px,py);
+        if(mouseDown) {
+            let d = Math.sqrt((px-oldx)**2+(py-oldy)**2);
+            if(d>3) {
+                for(let t=0.0; t<d; t+=3) {
+                    rstroke(oldx+(px-oldx)*t/d,oldy+(py-oldy)*t/d);                
+                }
+            }
+            rstroke(px,py);            
+
+        }
     }
     
     function onPointerUp(e) {
@@ -182,32 +155,7 @@ function initPointerEvents(canvas) {
 }
 
 
-
-//
-// stroke
-// 
-function stroke(x,y) {
-    // draw offline buffer
-    twgl.bindFramebufferInfo(gl, offlineBuffer);
-
-    gl.enable(gl.BLEND);
-    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-    GU.viewMatrix = worldToBufferMatrix;
-    const r = 5;
-    let pp = sg.getCellOrbit([x,y]);
-    pp.forEach(p=>{
-        m4.scale(
-            m4.translate(worldToBufferMatrix, [p[0],p[1],0]), 
-            [r,r], GU.tempMatrix);
-        GU.filledSquare.draw(GU.texturedMaterial, {
-            u_matrix: GU.tempMatrix,
-            u_texture: texture,
-            u_color: getCurrentColorRgba()
-        })
-    })
-    gl.disable(gl.BLEND);
-
-}
+// --------------------------------------------------------
 
 function setCurrentGroup(name) {
     console.log(this);
@@ -222,12 +170,11 @@ function setCurrentGroup(name) {
     sg.setCanvasSize(gl.canvas.width, gl.canvas.height, margin);
     worldToBufferMatrix = sg.getWorldToBufferMatrix();
     worldPolygon = sg.createWorldPolygon(gl, worldPolygon);
-
+    paintStrokes();
 }
 
-function setCurrentColor(color) {
-    currentColor = color;
-}
+
+// --------------------------------------------------------
 
 function getFoundamentalDomainBuffer() {
     if(!sg) return null;
@@ -246,7 +193,7 @@ function getFoundamentalDomainBuffer() {
     return shape;
 }
 
-
+// --------------------------------------------------------
 //
 // render
 //
@@ -340,19 +287,14 @@ function render() {
     sg.addEntities(prova);
     prova.update();    
     prova.draw(GU.coloredMaterial, { u_matrix: GU.viewMatrix});
-    
-    
-
-
 }
 
-
+// --------------------------------------------------------
 
 function download() {
     downloadRequested = true;
 }
 
-let downloadLink;
 
 function _doDownload() {
     downloadRequested = false;
@@ -361,4 +303,14 @@ function _doDownload() {
     downloadLink.setAttribute('download', 'mosaico.png');
     downloadLink.setAttribute('href', imgData);
     downloadLink.click();
+}
+
+function uff2() {
+    let t = performance.now();
+    const m = 1000;
+    for(let i=0;i<m;i++) {
+        let t = i/(m-1);
+        stroke(100 + t*100, 100 + 100*Math.sin(Math.PI*4*t));
+    }
+    console.log(performance.now() - t);
 }

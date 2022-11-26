@@ -244,13 +244,13 @@ class SymmetryGroup {
         const [x0,y0] = this.getP(u0,v0);
         const [x1,y1] = this.getP(u1,v1);
         shape.setColor(1,0.1,0.5);
-        shape.addLine(x0,y0,x1,y1);
+        shape.addDashLine(x0,y0,x1,y1);
     }
     _addG(shape, u0,v0, u1,v1) {
         const [x0,y0] = this.getP(u0,v0);
         const [x1,y1] = this.getP(u1,v1);
         shape.setColor(1,0.5,1.0);
-        shape.addLine(x0,y0,x1,y1);
+        shape.addZigZagLine(x0,y0,x1,y1);
     }
     addEntities(shape) {
         this.generatorSymbols.forEach(gs => {
@@ -785,8 +785,6 @@ class P6mGroup extends SymmetryGroup {
             ["G",1/4,0,1/6,1/6],
             ["G",1/2,0,1/6,1/6],
             ["G",1/2,0,1/4,1/4],
-            
-            
         ]
     }
     getFoundamentalP(p) {
