@@ -91,6 +91,7 @@ function beginStroke(x,y) {
     let stroke = new Stroke(currentColor);    
     stroke.addPoint(x,y,(x,y)=>paintDot(x,y,stroke.rgba))
     strokes.push(stroke); 
+    undoneStrokes = [];
 }
 
 function dragStroke(x,y) {
@@ -135,3 +136,8 @@ function clearStrokes() {
     strokes = [];
 }
 
+function clearAll() {
+    strokes = [];
+    undoneStrokes = [];
+    clearOfflineBuffer();
+}

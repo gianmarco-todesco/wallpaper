@@ -41,13 +41,13 @@ function createButtonBar(container) {
     toolbox.setAttribute('id','toolbox');
     container.appendChild(toolbox);
     let btn;
-    btn = createButton("clear", toolbox);
-    btn.onclick = clearOfflineBuffer;
-    btn = createButton("download", toolbox);
+    btn = createButton("<i class='fa-regular fa-file'></i>", toolbox);
+    btn.onclick = clearAll; 
+    btn = createButton("<i class='fa-solid fa-download'></i>", toolbox);
     btn.onclick = download;
-    btn = createButton("undo", toolbox);
+    btn = createButton("<i class='fa-solid fa-rotate-left'></i>", toolbox);
     btn.onclick = ()=>undo();
-    btn = createButton("redo", toolbox);
+    btn = createButton("<i class='fa-solid fa-rotate-right'></i>", toolbox);
     btn.onclick = ()=>redo();
     
     let span = document.createElement('span');
