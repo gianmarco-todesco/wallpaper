@@ -2,6 +2,7 @@
 let currentColor = chroma.hsv(0,1,0.6);
 let strokes = [];
 let undoneStrokes = [];
+let currentBgColor = chroma.hsv(0,1,0);
 
 class Stroke {
     constructor(color) {
@@ -51,7 +52,12 @@ class Stroke {
 
 function setCurrentColor(color) {
     currentColor = color;
+}
 
+function setBackgroundColor(color) {
+    currentBgColor = color;
+    clearOfflineBuffer();
+    paintStrokes();
 }
 
 // --------------------------------------------------------
@@ -120,7 +126,7 @@ function redo() {
 function clearOfflineBuffer() {
     // draw offline buffer
     twgl.bindFramebufferInfo(gl, offlineBuffer);
-    gl.clearColor(0.0, 0.0, 0.0, 1);
+    gl.clearColor(...currentBgColor.rgba().map(c=>c/255.0));
     gl.clear(gl.COLOR_BUFFER_BIT);
 }
 

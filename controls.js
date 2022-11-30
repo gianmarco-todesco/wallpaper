@@ -42,17 +42,25 @@ function createButtonBar(container) {
     container.appendChild(toolbox);
     let btn;
     btn = createButton("<i class='fa-regular fa-file'></i>", toolbox);
+    btn.title="Cancella il disegno";
     btn.onclick = clearAll; 
     btn = createButton("<i class='fa-solid fa-download'></i>", toolbox);
+    btn.title="Download";
     btn.onclick = download;
     btn = createButton("<i class='fa-solid fa-rotate-left'></i>", toolbox);
+    btn.title="Undo";
     btn.onclick = ()=>undo();
     btn = createButton("<i class='fa-solid fa-rotate-right'></i>", toolbox);
+    btn.title="Redo";
     btn.onclick = ()=>redo();
     
-    let span = document.createElement('span');
-    span.innerHTML = "|";
-    
+    let span;
+
+
+    span = document.createElement('span');
+    span.innerHTML = "&nbsp;colore:";
+    toolbox.appendChild(span);
+
     const m = 10;
     let colors = chroma.scale('Spectral').colors(m, null);
     for(let i=0;i<m;i++) {
@@ -69,7 +77,27 @@ function createButtonBar(container) {
         }
         toolbox.appendChild(colorBtn);
     }
-    container.appendChild(span);
+    span = document.createElement('span');
+    span.innerHTML = "colore:";
+    toolbox.appendChild(span);
+
+
+    [chroma("black"), chroma("white")].forEach((bgcol,i) => {
+        let bgColorBtn;
+        bgColorBtn = document.createElement('button');
+        bgColorBtn.classList.add('my-btn','bg-color-btn');
+        bgColorBtn.style.backgroundColor = bgcol;
+        bgColorBtn.onpointerdown = () => {
+                setBackgroundColor(bgcol);
+                bgColorBtn.classList.add('checked');
+                Array.from(document.querySelectorAll('.bg-color-btn'))
+                    .filter(b=>b!==bgColorBtn)
+                    .forEach(b=>b.classList.remove('checked'));
+            }
+            toolbox.appendChild(bgColorBtn);
+    
+    })
+
 }
 
 class GroupControlPanel {
