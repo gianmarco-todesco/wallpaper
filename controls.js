@@ -58,7 +58,8 @@ function createButtonBar(container) {
 
 
     span = document.createElement('span');
-    span.innerHTML = "&nbsp;colore:";
+    span.classList.add("spc");
+    span.innerHTML = "";
     toolbox.appendChild(span);
 
     const m = 10;
@@ -78,7 +79,8 @@ function createButtonBar(container) {
         toolbox.appendChild(colorBtn);
     }
     span = document.createElement('span');
-    span.innerHTML = "colore:";
+    span.classList.add("spc");
+    span.innerHTML = "";
     toolbox.appendChild(span);
 
 

@@ -40,6 +40,27 @@ class Shape {
     }
 }
 
+class DynamicShape {
+    constructor(options) {
+        const gl = this.gl = options.gl;
+        this.bufferInfo = twgl.createBufferInfoFromArrays(gl, options.arrays);
+        this.verb = options.verb;
+    }
+
+    draw(material, uniforms) {
+        gl.useProgram(material.programInfo.programInfo.program);
+
+        twgl.setBuffersAndAttributes(
+            this.gl, 
+            material.programInfo.programInfo, 
+            this.bufferInfo);
+        for(let u in uniforms) material.uniforms[u] = uniforms[u];
+        twgl.setUniforms(material.programInfo.programInfo, material.uniforms);
+        twgl.drawBufferInfo(this.gl, this.bufferInfo, this.verb);
+    }
+}
+
+
 class DynamicColoredShape {
     constructor(options) {
         const gl = this.gl = options.gl;
