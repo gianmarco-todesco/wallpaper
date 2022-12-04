@@ -814,8 +814,6 @@ class P31mGroup extends SymmetryGroup {
             ["M",0,0,1,0],
             ["G",1/2,0,1/4,1/4],
             ["G",1/2,0,1/2,1/4],
-            
-            
         ]
         this.symmetrySymbols = [
             { name: "R3a", type:"R3", pos:[0,0] },
@@ -826,8 +824,7 @@ class P31mGroup extends SymmetryGroup {
             { name: "Ma",  type:"M", pos:[0,1,1,0] },
             { name: "Ga",  type:"G", pos:[1/2,0,1/4,1/4] },
             { name: "Ga",  type:"G", pos:[1/2,0,1/2,1/2] },
-            { name: "Ga",  type:"G", pos:[0,1/2,1,1/2] },
-            
+            { name: "Ga",  type:"G", pos:[0,1/2,1,1/2] },            
         ];
 
     }
@@ -862,6 +859,14 @@ class P6Group extends SymmetryGroup {
             ["R3", 1/3, 1/3],
             ["R2", 0.5, 0],            
         ]
+        this.symmetrySymbols = [
+            { name: "R6a", type:"R6", pos:[0,0] },
+            { name: "R3a", type:"R3", pos:[1/3,1/3] },
+            { name: "R3a", type:"R3", pos:[2/3,2/3] },
+            { name: "R2a", type:"R2", pos:[1/2,0] },
+            { name: "R2a", type:"R2", pos:[0,1/2] },
+            { name: "R2a", type:"R2", pos:[1/2,1/2] },
+        ];
 
     }
     getFoundamentalP(p) {
@@ -900,6 +905,31 @@ class P6mGroup extends SymmetryGroup {
             ["G",1/2,0,1/6,1/6],
             ["G",1/2,0,1/4,1/4],
         ]
+        this.symmetrySymbols = [
+            { name: "R6a", type:"R6", pos:[0,0] },
+            { name: "R3a", type:"R3", pos:[1/3,1/3] },
+            { name: "R3a", type:"R3", pos:[2/3,2/3] },
+            { name: "R2a", type:"R2", pos:[1/2,0] },
+            { name: "R2a", type:"R2", pos:[0,1/2] },
+            { name: "R2a", type:"R2", pos:[1/2,1/2] },
+            { name: "Ma",  type:"M", pos:[0,0,1/3,1/3] },
+            { name: "Ma",  type:"M", pos:[0.5,0,0,1] },
+            { name: "Ma",  type:"M", pos:[0.0,0.5,1,0] },
+
+            //{ name: "Ma",  type:"M", pos:[0,0,0,1] },
+           // { name: "Ma",  type:"M", pos:[0,1,1,0] },
+            //{ name: "Ma",  type:"M", pos:[0.5,0,0,1] },
+
+            { name: "Mb",  type:"M", pos:[0,0,1,0] },
+            { name: "Mb",  type:"M", pos:[0,0,0,1] },
+            { name: "Mb",  type:"M", pos:[1,0,0,1] },
+            
+            /*
+            { name: "Ga",  type:"G", pos:[1/2,0,1/4,1/4] },
+            { name: "Ga",  type:"G", pos:[1/2,0,1/2,1/2] },
+            { name: "Ga",  type:"G", pos:[0,1/2,1,1/2] },   */         
+        ];
+
     }
     getFoundamentalP(p) {
         let [u,v,uu,vv] = this.getUV(p);
