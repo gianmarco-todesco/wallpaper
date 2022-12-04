@@ -18,6 +18,7 @@ let downloadRequested = false;
 let groupsTable = {};
 let prova;
 let downloadLink;
+let globalSymmetrySymbols;
 
 // --------------------------------------------------------
 /*
@@ -94,6 +95,7 @@ function initialize() {
         src: textureCanvas,
         min: gl.LINEAR,
     });
+
     /*
     function updateTexture() {
         gl.bindTexture(gl.TEXTURE_2D, textures.tx);
@@ -107,11 +109,43 @@ function initialize() {
     createControls();
     initButtons();
 
-    prova = new DynamicColoredShape({ gl, n: 1000, verb: gl.LINES});
+    prova =  new DynamicColoredShape({ 
+        gl, n: 1000, verb: gl.LINES});
+    globalSymmetrySymbols = new DynamicColoredShape({ 
+        gl, n: 10000, verb: gl.LINES});
+
 }
 
+function foo(L) {
+    globalSymmetrySymbols.idx = 0;
+    let sgh = new SymmetryGroupHelper(sg,globalSymmetrySymbols);
+    sgh.addSymbols(L);
+}
+
+function drawMyTest() 
+{
+    // globalSymmetrySymbols.update();    
+    globalSymmetrySymbols.draw(GU.coloredMaterial, { u_matrix: GU.viewMatrix});
+
+    return;
 
 
+    let material = GU.simpleMaterial;
+    let uniforms = {
+        u_matrix : GU.viewMatrix, 
+        u_color : [1,1,0,1]
+    }
+    let gl = mytest.gl;
+    gl.useProgram(material.programInfo.programInfo.program);
+    twgl.setBuffersAndAttributes(
+        gl, 
+        material.programInfo.programInfo, 
+        mytest.bufferInfo);
+    for(let u in uniforms) material.uniforms[u] = uniforms[u];
+    twgl.setUniforms(material.programInfo.programInfo, material.uniforms);
+    twgl.drawBufferInfo(gl, mytest.bufferInfo, gl.LINE_STRIP, 4);
+
+}
 
 // --------------------------------------------------------
 //
@@ -162,6 +196,8 @@ function setCurrentGroup(name) {
     worldToBufferMatrix = sg.getWorldToBufferMatrix();
     worldPolygon = sg.createWorldPolygon(gl, worldPolygon);
     paintStrokes();
+    if(globalSymmetrySymbols)
+        globalSymmetrySymbols.clear();
 }
 
 
@@ -217,7 +253,14 @@ function render() {
             u_color: [1,1,1,1]
         });
         if(downloadRequested) _doDownload();
-        
+
+
+        // symmetry symbols
+        if(globalSymmetrySymbols)
+            globalSymmetrySymbols.draw(
+                GU.coloredLineMaterial, { u_matrix: GU.viewMatrix});
+
+
         // translation cell
         GU.drawParallelogram(sg.cell[0], sg.a, sg.b, [0.5,0.5,0.5,1]);
 
@@ -274,10 +317,14 @@ function render() {
 
     let radius = 100; // 50+40*Math.sin(performance.now()*0.001);
 
+    /*
     prova.idx = 0;
     sg.addEntities(prova);
     prova.update();    
     prova.draw(GU.coloredMaterial, { u_matrix: GU.viewMatrix});
+    */
+    // drawMyTest();
+
 }
 
 // --------------------------------------------------------

@@ -301,6 +301,12 @@ class P2Group extends SymmetryGroup {
             ["R2",0,0], ["R2",0.5,0], ["R2",1,0], 
             ["R2",0.5,0.5], ["R2",1,0.5], ["R2",1,1], 
         ];
+        this.symmetrySymbols = [
+            { name: "R2a", type:"R2", pos:[0.0,0.0] },
+            { name: "R2b", type:"R2", pos:[0.5,0.0] },
+            { name: "R2c", type:"R2", pos:[0.5,0.5] },
+            { name: "R2d", type:"R2", pos:[1.0,0.5] },            
+        ];
     }
     getFoundamentalP(p) {
         let [u,v,uu,vv] = this.getUV(p);
@@ -328,7 +334,11 @@ class PmGroup extends SymmetryGroup {
         this.generatorSymbols = [
             ["M",0,0,1,0],
             ["M",0,0.5,1,0.5]
-        ]
+        ];
+        this.symmetrySymbols = [
+            { name: "Ma", type:"M", pos:[0.0,0.0,1.0,0.0] },
+            { name: "Mb", type:"M", pos:[0.0,0.5,1.0,0.5] },
+        ];
     }
     getFoundamentalP(p) {
         let [u,v,uu,vv] = this.getUV(p);
@@ -352,7 +362,12 @@ class PgGroup extends SymmetryGroup {
             ["G",0,0,0,0.5],
             ["G",0.5,0,0.5,0.5],
             ["G",1,0,1,0.5],
-        ]
+        ];
+        this.symmetrySymbols = [
+            { name: "Ga", type:"G", pos:[0.0,0.0,0.0,0.5] },
+            { name: "Gb", type:"G", pos:[0.5,0.0,0.5,0.5] },
+        ];
+
     }
     getFoundamentalP(p) {
         let [u,v,uu,vv] = this.getUV(p);
@@ -376,6 +391,10 @@ class CmGroup extends SymmetryGroup {
             ["M",-0.1,0.1,0.1,-0.1],
             ["G",0.5,0,0,0.5]
         ]
+        this.symmetrySymbols = [
+            { name: "Ma", type:"M", pos:[1.0,0.0,0.0,1.0] },
+            { name: "Ga", type:"G", pos:[0.5,0.0,0.0,0.5] },
+        ];
     }
     getFoundamentalP(p) {
         let [u,v,uu,vv] = this.getUV(p);
@@ -406,6 +425,16 @@ class PmmGroup extends SymmetryGroup {
             ["M",0,0,0,0.5],
             ["M",0.5,0,0.5,0.5],            
         ]
+        this.symmetrySymbols = [
+            { name: "R2a", type:"R2", pos:[0.0,0.0] },
+            { name: "R2b", type:"R2", pos:[0.0,0.5] },
+            { name: "R2c", type:"R2", pos:[0.5,0.0] },
+            { name: "R2d", type:"R2", pos:[0.5,0.5] },
+            { name: "Ma", type:"M", pos:[0.0,0.0,0.5,0.0] },
+            { name: "Mb", type:"M", pos:[0.0,0.5,0.5,0.5] },
+            { name: "Mc", type:"M", pos:[0.0,0.0,0.0,0.5] },
+            { name: "Md", type:"M", pos:[0.0,0.5,0.5,0.5] },
+        ];
     }
     getFoundamentalP(p) {
         let [u,v,uu,vv] = this.getUV(p);
@@ -433,9 +462,17 @@ class PmgGroup extends SymmetryGroup {
             ["M",0,0,0.5,0],
             ["M",0,0.5,0.5,0.5],
             ["G",0,0,0,0.5],
-            ["G",0.5,0,0.5,0.5],
-            
+            ["G",0.5,0,0.5,0.5],            
         ]
+        this.symmetrySymbols = [
+            { name: "R2a", type:"R2", pos:[0.0,0.25] },
+            { name: "R2b", type:"R2", pos:[0.5,0.25] },
+            { name: "Ma", type:"M", pos:[0.0,0.0,0.5,0.0] },
+            { name: "Mb", type:"M", pos:[0.0,0.5,0.5,0.5] },
+            { name: "Ga", type:"G", pos:[0.0,0.0,0.0,0.5] },
+            { name: "Gb", type:"G", pos:[0.5,0.0,0.5,0.5] },
+        ];
+
     }
     getFoundamentalP(p) {
         let [u,v,uu,vv] = this.getUV(p);
@@ -466,9 +503,16 @@ class PggGroup extends SymmetryGroup {
             ["R2", 0.5, 0.0],
             ["G",1/4,1/4,3/4,1/4],
             ["G",1/4,1/4,1/4,1/2],
-            ["G",3/4,1/4,3/4,1/2],
-            
+            ["G",3/4,1/4,3/4,1/2], 
         ]
+        this.symmetrySymbols = [
+            { name: "R2a", type:"R2", pos:[0.5,0.5] },
+            { name: "R2b", type:"R2", pos:[0.0,0.5] },
+            { name: "R2c", type:"R2", pos:[0.5,0.0] },
+            { name: "Ga", type:"G", pos:[1/4,1/4,3/4,1/4] },
+            { name: "Gb", type:"G", pos:[1/4,1/4,1/4,1/2] },
+            { name: "Gc", type:"G", pos:[3/4,1/4,3/4,1/2] },
+        ];
     }
     getFoundamentalP(p) {
         let [u,v,uu,vv] = this.getUV(p);
@@ -507,9 +551,18 @@ class CmmGroup extends SymmetryGroup {
             ["M", 0,1,0.5,0.5],
             ["M", 0,0,0.5,0.5],
             ["G", 0,0.5,1/4,3/4],
-            ["G", 0,0.5,1/4,1/4],
-            
+            ["G", 0,0.5,1/4,1/4], 
         ]
+        this.symmetrySymbols = [
+            { name: "R2a", type:"R2", pos:[0.0,0.0] },
+            { name: "R2b", type:"R2", pos:[0.5,0.5] },
+            { name: "R2c", type:"R2", pos:[0.0,0.5] },
+            { name: "R2d", type:"R2", pos:[0.5,0.0] },
+            { name: "Ma", type:"M", pos:[0,1,1/2,1/2] },
+            { name: "Mb", type:"M", pos:[0,0,1/2,1/2] },
+            { name: "Ga", type:"G", pos:[0,1/2,1/4,3/4] },
+            { name: "Gb", type:"G", pos:[0,1/2,1/4,1/4] },
+        ];
     }
     getFoundamentalP(p) {
         let [u,v,uu,vv] = this.getUV(p);
@@ -538,6 +591,13 @@ class P4Group extends SymmetryGroup {
             ["R2", 0.0, 0.5],
             ["R2", 0.5, 0.0],
         ]
+        this.symmetrySymbols = [
+            { name: "R4a", type:"R4", pos:[0.5,0.5] },
+            { name: "R4b", type:"R4", pos:[0.0,0.0] },
+            { name: "R2a", type:"R2", pos:[0.0,0.5] },
+            { name: "R2b", type:"R2", pos:[0.5,0.0] },
+        ];
+
     }
     getFoundamentalP(p) {
         let [u,v,uu,vv] = this.getUV(p);
@@ -570,7 +630,21 @@ class P4mGroup extends SymmetryGroup {
             ["M",0.5,0,0.5,0.5],
             ["M",0.5,0.5,0,0],
             ["G",0.5,0,0.25,0.25]
-        ]
+        ],
+        this.symmetrySymbols = [
+            { name: "R4a", type:"R4", pos:[0.5,0.5] },
+            { name: "R4b", type:"R4", pos:[0.0,0.0] },
+            { name: "R2a", type:"R2", pos:[0.5,0.0] },
+            { name: "R2b", type:"R2", pos:[0.0,0.5] },
+            { name: "Ma",  type:"M",  pos:[0.0,0.0,1.0,0.0] },
+            { name: "Ma",  type:"M",  pos:[0.0,0.0,0.0,1.0] },
+            { name: "Mb",  type:"M",  pos:[0.5,0.0,0.5,1.0] },
+            { name: "Mb",  type:"M",  pos:[0.0,0.5,1.0,0.5] },
+            { name: "Mc",  type:"M",  pos:[0.0,0.0,1.0,1.0] },
+            { name: "Mc",  type:"M",  pos:[0.0,1.0,1.0,0.0] },            
+            { name: "Ga",  type:"G",  pos:[0.5,0.0,0.25,0.25] },
+            { name: "Ga",  type:"G",  pos:[0.5,0.0,0.75,0.25] },
+        ];
     }
     getFoundamentalP(p) {
         let [u,v,uu,vv] = this.getUV(p);
@@ -610,6 +684,20 @@ class P4gGroup extends SymmetryGroup {
             ["G",0.25,0.25,0.5,0.25],
             
         ]
+        this.symmetrySymbols = [
+            { name: "R4a", type:"R4", pos:[0.5,0.5] },
+            { name: "R4a", type:"R4", pos:[0.0,0.0] },
+            { name: "R2a", type:"R2", pos:[0.0,0.5] },
+            { name: "R2b", type:"R2", pos:[0.5,0.0] },
+            { name: "Ma",  type:"M",  pos:[0.5,0.0,0.0,0.5] },
+            { name: "Ma",  type:"M",  pos:[0.5,0.0,1.0,0.5] },
+            { name: "Ga",  type:"G",  pos:[0.0,0.0,0.5,0.5] },
+            { name: "Ga",  type:"G",  pos:[1.0,0.0,0.5,0.5] },
+            { name: "Gb",  type:"G",  pos:[0.25,0.0,0.25,1.0] },
+            { name: "Gb",  type:"G",  pos:[0.75,0.0,0.75,1.0] },
+            { name: "Gb",  type:"G",  pos:[0.0,0.25,1.0,0.25] },
+            { name: "Gb",  type:"G",  pos:[0.0,0.75,1.0,0.75] },
+        ];
     }
     getFoundamentalP(p) {
         let [u,v,uu,vv] = this.getUV(p);
@@ -645,6 +733,11 @@ class P3Group extends SymmetryGroup {
             ["R3", 1/3, 1/3],
             ["R3", 2/3, 2/3],
         ]
+        this.symmetrySymbols = [
+            { name: "R3a", type:"R3", pos:[1,0] },
+            { name: "R3b", type:"R3", pos:[1/3,1/3] },
+            { name: "R3c", type:"R3", pos:[2/3,2/3] },
+        ];
     }
     getFoundamentalP(p) {
         let [u,v,uu,vv] = this.getUV(p);
@@ -677,6 +770,15 @@ class P3m1Group extends SymmetryGroup {
             ["G",1/2,1/2,1/3,5/6],
             ["G",1/3,5/6,1/6,2/3],            
         ]
+        this.symmetrySymbols = [
+            { name: "R3a", type:"R3", pos:[0,1] },
+            { name: "R3b", type:"R3", pos:[1/3,1/3] },
+            { name: "R3c", type:"R3", pos:[2/3,2/3] },
+            { name: "Ma",  type:"M", pos:[0,1,1/3,1/3] },
+            { name: "Mb",  type:"M", pos:[1/3,1/3,2/3,2/3] },
+            { name: "Mc",  type:"M", pos:[2/3,2/3,0,1] },
+            
+        ];
     }
     getFoundamentalP(p) {
         let [u,v,uu,vv] = this.getUV(p);
@@ -715,6 +817,18 @@ class P31mGroup extends SymmetryGroup {
             
             
         ]
+        this.symmetrySymbols = [
+            { name: "R3a", type:"R3", pos:[0,0] },
+            { name: "R3b", type:"R3", pos:[1/3,1/3] },
+            { name: "R3b", type:"R3", pos:[2/3,2/3] },
+            { name: "Ma",  type:"M", pos:[0,0,1,0] },
+            { name: "Ma",  type:"M", pos:[0,0,0,1] },
+            { name: "Ma",  type:"M", pos:[0,1,1,0] },
+            { name: "Ga",  type:"G", pos:[1/2,0,1/4,1/4] },
+            { name: "Ga",  type:"G", pos:[1/2,0,1/2,1/2] },
+            { name: "Ga",  type:"G", pos:[0,1/2,1,1/2] },
+            
+        ];
 
     }
     getFoundamentalP(p) {
@@ -833,3 +947,190 @@ function getGroup(name) {
     let cl = groupTable[name];
     return cl ? new cl() : null;
 }
+
+
+class SymmetryGroupHelper {
+    constructor(g, shape) {
+        this.g = g;
+        this.shape = shape;
+        this.uvRange = g._computeUVRange();
+    }
+
+    addSymbols(L) {
+        this.shape.idx = 0;
+        let symbols = this.g.symmetrySymbols || [];
+        symbols = [
+            ...symbols.filter(s=>!s.type.startsWith("R")),
+            ...symbols.filter(s=>s.type.startsWith("R"))];
+        const me = this;
+        const methods = {
+            "R2": (pos) => me.addRotationCenter(pos,2),
+            "R3": (pos) => me.addRotationCenter(pos,3),
+            "R4": (pos) => me.addRotationCenter(pos,4),
+            "R6": (pos) => me.addRotationCenter(pos,6),
+            "M" : (pos) => me.addReflections(pos),
+            "G" : (pos) => me.addGlideReflections(pos),            
+        }
+        symbols
+           .filter(symbol=>L.find(s=>s==symbol.name))
+            .forEach(symbol => {
+                let f = methods[symbol.type];
+                if(f) f(symbol.pos);            
+            });        
+        this.shape.update();   
+        console.log(this.shape.idx);
+    }
+
+    addRotationCenter(p,m) {
+        let param = SymmetryGroupHelper.rotParams[m];
+        if(!param) return;
+        this.shape.setColor(...param.color);
+        console.log(param.color);
+        let num = param.vv.length/2;
+        for(let du = this.uvRange[0]; du <= this.uvRange[1]; du++)
+        for(let dv = this.uvRange[2]; dv <= this.uvRange[3]; dv++)
+        {
+            const [x,y] = this.g.getP(p[0]+du,p[1]+dv);        
+            for(let i=0; i<num; i++) {
+                let i1 = (i+1)%num;
+                this.shape.addLine(
+                    x+param.vv[i*2],
+                    y+param.vv[i*2+1],
+                    x+param.vv[i1*2],
+                    y+param.vv[i1*2+1]);
+            }
+    
+        }
+
+    }
+
+    addSingleLine(p,d,isDashed) {
+        let ta=-Infinity,tb=Infinity;
+        const epsilon = 0.0001;
+        const [u0,u1,v0,v1] = this.uvRange;
+        
+        if(Math.abs(d[0]) > epsilon) {
+            ta = (u0 - p[0])/d[0];
+            tb = (u1 - p[0])/d[0];
+            if(d[0] < 0) [ta,tb] = [tb,ta];            
+        }
+        if(Math.abs(d[1]) > epsilon) {
+            let ta2 = (v0 - p[1])/d[1];
+            let tb2 = (v1 - p[1])/d[1];
+            if(d[1] < 0) [ta2,tb2] = [tb2,ta2];
+            ta = Math.max(ta, ta2);
+            tb = Math.min(tb, tb2);
+        }
+        if(ta < tb) {
+            const [xa, ya] = this.g.getP(p[0]+d[0]*ta,p[1]+d[1]*ta);
+            const [xb, yb] = this.g.getP(p[0]+d[0]*tb,p[1]+d[1]*tb);
+            if(isDashed) 
+                this.shape.addDashLine(xa,ya,xb,yb);
+            else 
+                this.shape.addLine(xa,ya,xb,yb);
+            return true;    
+        } else {
+            return false;
+        }
+    }
+
+    addReflections(pos) {
+        this.shape.setColor(0,0,1,1);
+        this.addLineFamily(pos, false);
+    }
+    addGlideReflections(pos) {
+        this.shape.setColor(1,0.5,0,1);
+        this.addLineFamily(pos, true);
+    }
+    
+    addLineFamily(pos, dashed) {
+        let p = [pos[0],pos[1]];
+        let d = [pos[2]-pos[0], pos[3]-pos[1]];
+        let ret;
+        ret = this.addSingleLine(p, d, dashed);
+        if(!ret) return;
+        let L = [];        
+        const epsilon = 0.001;
+        if(Math.abs(d[1]) > epsilon) L.push([1,0],[-1,0]);
+        if(Math.abs(d[0]) > epsilon) L.push([0,1],[0,-1]);
+        L.forEach(([dx,dy])=> {
+            let pp = [p[0]+dx, p[1]+dy];
+            let count = 50;
+            while(count >=0 && this.addSingleLine(pp,d,dashed)) {
+                count -= 1;
+                pp[0]+=dx; 
+                pp[1]+=dy;
+            }
+            if(count==0) 
+                console.warn("possible infinite loop detected")
+        });        
+    }
+
+}
+
+SymmetryGroupHelper.R2 = { 
+    color: [1,0.5,0.5],
+    vv: ((r0,r1)=>[0,-r1, r0,0, 0,r1, -r0,0])(5,7)
+}
+SymmetryGroupHelper.R3 = { 
+    color: [1,0.5,0.5],
+    vv: ((r)=> {
+        const dx = r * 3/2 / (Math.sqrt(3)/2) / 2;
+        return [0,-r, dx,r/2, -dx,r/2];        
+    })(8)
+}
+SymmetryGroupHelper.R4 = { 
+    color: [1,0.5,0.5],
+    vv: ((r)=> [-r,-r, r,-r, r,r, -r,r])(4)
+}
+SymmetryGroupHelper.R6 = { 
+    color: [1,0.5,0.5],
+    vv: ((r)=> {
+        const pts = [];
+        for(let i=0;i<6;i++) {
+            let phi = Math.PI*2*i/6;
+            pts.push(r*Math.cos(phi), r*Math.sin(phi));
+        }
+        return pts;
+    })(7)
+}
+
+
+SymmetryGroupHelper.rotParams = [
+    null,null,
+    SymmetryGroupHelper.R2, 
+    SymmetryGroupHelper.R3, 
+    SymmetryGroupHelper.R4, 
+    null,
+    SymmetryGroupHelper.R6, 
+]
+/*
+const r0 = 5, r1 = 7;
+shape.setColor(1,0.5,0.5);
+this._addRCenter(shape, u, v, [0,-r1, r0,0, 0,r1, -r0,0]);
+}
+_addR3(shape, u, v) {
+const [x,y] = this.getP(u,v);
+const r = 6, dx = r * 3/2 / (Math.sqrt(3)/2) / 2;
+shape.setColor(1,0.5,0.5);
+this._addRCenter(shape, u, v, [0,-r, dx,r/2, -dx,r/2]);
+}
+_addR4(shape, u, v) {
+const [x,y] = this.getP(u,v);
+const r = 4;
+shape.setColor(1,0.5,0.5);
+this._addRCenter(shape, u, v, [-r,-r, r,-r, r,r, -r,r]);
+}
+_addR6(shape, u, v) {
+const [x,y] = this.getP(u,v);
+const r = 7;
+const pts = [];
+shape.setColor(1,0.5,0.5);
+for(let i=0;i<6;i++) {
+    let phi = Math.PI*2*i/6;
+    pts.push(r*Math.cos(phi), r*Math.sin(phi));
+}
+*/
+
+
+

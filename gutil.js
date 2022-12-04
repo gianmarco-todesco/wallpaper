@@ -40,26 +40,6 @@ class Shape {
     }
 }
 
-class DynamicShape {
-    constructor(options) {
-        const gl = this.gl = options.gl;
-        this.bufferInfo = twgl.createBufferInfoFromArrays(gl, options.arrays);
-        this.verb = options.verb;
-    }
-
-    draw(material, uniforms) {
-        gl.useProgram(material.programInfo.programInfo.program);
-
-        twgl.setBuffersAndAttributes(
-            this.gl, 
-            material.programInfo.programInfo, 
-            this.bufferInfo);
-        for(let u in uniforms) material.uniforms[u] = uniforms[u];
-        twgl.setUniforms(material.programInfo.programInfo, material.uniforms);
-        twgl.drawBufferInfo(this.gl, this.bufferInfo, this.verb);
-    }
-}
-
 
 class DynamicColoredShape {
     constructor(options) {
@@ -67,15 +47,20 @@ class DynamicColoredShape {
         const maxN = options.n || 1000;
         let pts = this.pts = new Float32Array(maxN*2);
         let colors = this.colors = new Float32Array(maxN*4);        
+        let uvs = this.uvs = new Float32Array(maxN*2);
         this.bufferInfo = twgl.createBufferInfoFromArrays(gl, {
             position: { numComponents: 2, data : pts },
-            color: { numComponents: 4, data : colors },            
+            color: { numComponents: 4, data : colors },   
+            texcoord: { numComponents: 2, uvs }          
         });
         this.verb = options.verb;
         this.currentColor = [1,1,1,1];
         this.idx = 0;
     }
-
+    
+    clear() {
+        this.idx = 0;
+    }
     setColor(r,g,b,a=1) {
         this.currentColor[0]=r;
         this.currentColor[1]=g;
@@ -89,8 +74,18 @@ class DynamicColoredShape {
         this.pts[i*2+2] = x1;
         this.pts[i*2+3] = y1;
         for(let j=0;j<8;j++) this.colors[i*4+j] = this.currentColor[j%4];
+        for(let j=0;j<4; j++) this.uvs[i*2+j] = 1;
         this.idx += 2;
     }
+    addDashLine(x0,y0,x1,y1) {
+        let dx = x1-x0, dy = y1-y0;
+        let d = Math.sqrt(dx*dx+dy*dy);
+        let i = this.idx;
+        this.addLine(x0,y0,x1,y1);
+        this.uvs[i*2+0] = 0.0;
+        this.uvs[i*2+2] = d/10.0;
+    }
+    /*
     addDashLine(x0,y0,x1,y1) {
         let dashLength = 5;
         let e0x=x1-x0, e0y=y1-y0; 
@@ -126,6 +121,7 @@ class DynamicColoredShape {
             sgn = -sgn;
         }
     }
+    */
     
 
     update() {
@@ -135,6 +131,9 @@ class DynamicColoredShape {
         twgl.setAttribInfoBufferFromArray(gl, 
             this.bufferInfo.attribs.a_color, 
             this.colors);    
+        twgl.setAttribInfoBufferFromArray(gl, 
+            this.bufferInfo.attribs.a_texcoord, 
+            this.uvs);    
     }
 
     draw(material, uniforms) {
@@ -188,6 +187,36 @@ function createPrograms(gl) {
         varying vec4 v_color;
         void main() {
           gl_FragColor = v_color;
+        }
+        `,
+        uniforms:{
+            u_matrix : twgl.m4.identity()
+        }        
+    });
+
+    GU.coloredLineMaterial = new Material({gl, 
+        vs: `
+        uniform mat4 u_matrix;
+        attribute vec2 a_position;
+        attribute vec4 a_color;
+        varying vec4 v_color;
+        attribute vec2 a_texcoord;
+        varying vec2 v_texcoord;
+    
+        void main() {
+          gl_Position = u_matrix * vec4(a_position, 0, 1);
+          v_color = a_color;
+          v_texcoord = a_texcoord;
+        }
+        `,
+        fs:`
+        precision mediump float;
+        varying vec4 v_color;
+        varying vec2 v_texcoord;
+        void main() {
+            float v = fract(v_texcoord[0]);
+            v = 1.0 - 4.0*v*(1.0-v);
+            gl_FragColor = vec4(v_color.rgb * v, v_color.a);
         }
         `,
         uniforms:{

@@ -121,7 +121,8 @@ class GroupControlPanel {
         body.classList.add('body');
         panel.appendChild(body);
         let description = this.description = document.createElement('p');
-        // body.appendChild(description);
+        description.classList.add('description');
+        body.appendChild(description);
         description.innerHTML = "sigh";
 
         let examplesTitle = document.createElement('H2');
@@ -156,7 +157,7 @@ class GroupControlPanel {
     }
 
     refresh(groupName) {
-        this.description.innerHTML = "Descrizione del gruppo " + groupName;
+        // this.description.innerHTML = "Descrizione del gruppo " + groupName;
         let info = groupsData[groupName];
         if(info && info.exampleCount>0) {
             this.examples.innerHTML = [...Array(info.exampleCount).keys()]
@@ -166,10 +167,51 @@ class GroupControlPanel {
             this.examples.innerHTML = "";
         }
         
+        this.description.innerHTML = "";
+        let group = getGroup(groupName);
+        if(group && group.symmetrySymbols) {
+            let lastType=null;
+            let touched = {}
+            group.symmetrySymbols.forEach(s => {
+                if(touched[s.name]) return;
+                touched[s.name] = true;
+                if(lastType != s.type) {
+                    if(lastType != null)
+                        this.description.appendChild(document.createElement('br'));
+                    let span = document.createElement('span');
+                    span.innerHTML = s.type;
+                    span.classList.add('symmetry-symbol-label');
+                    console.log(span);
+                    this.description.appendChild(span);
+                    lastType = s.type;
+                }
+                let cbId = s.name + "_cb";
+                let cb = document.createElement('input');
+                cb.classList.add('sym-checkbox');
+                cb.setAttribute('id',cbId);
+                cb.setAttribute('type','checkbox');
+                cb.setAttribute('sym-name',s.name);
+                cb.onclick = symmetrySymbolToggled;
+                this.description.appendChild(cb);
+            })
+        }
+
     }
 }
 
 
+function symmetrySymbolToggled() {
+    //console.log(arguments);
+    //console.log(this);
+    let L = [];
+    document.querySelectorAll('.sym-checkbox').forEach(cb=>{
+        if(cb.checked) L.push(cb.getAttribute('sym-name'));
+    });
+    console.log(L);
+    globalSymmetrySymbols.clear();
+    let sgh = new SymmetryGroupHelper(sg,globalSymmetrySymbols);
+    sgh.addSymbols(L);
+}
 
 
 function createControls() {

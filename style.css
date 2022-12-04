@@ -91,6 +91,10 @@
     border: solid 2px red;
 }
 
+.description {
+    margin-top: 0;
+
+}
 .spc {
     width:20px;
 }
@@ -100,6 +104,11 @@
         background-color: white;
         color: black;
         font-size: small;
+}
+
+.symmetry-symbol-label {
+    display: inline-block;
+    width:20px;
 }
 
 #info {
@@ -124,7 +133,7 @@
     padding: 0 4px;
     margin: 4px;
     font-size:14px;
-    width:60px;
+    width:80px;
 }
 
 #info .body {
