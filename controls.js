@@ -145,13 +145,28 @@ class GroupControlPanel {
 
     populateGroupMenu(groupMenu) {
         const groupNameList = [
-            "P1","Pm","Cm","Pg","P2","Pmm","Cmm","Pmg","Pgg",
-            "P3","P31m","P3m1","P4","P4g","P4m","P6","P6m"
+            {id:"P1",name:"P1 (o)"}, 
+            {id:"Pm",name:"Pm (**)"}, 
+            {id:"Cm",name:"Cm (*x)"}, 
+            {id:"Pg",name:"Pg (xx)"}, 
+            {id:"P2",name:"P2 (2222)"}, 
+            {id:"Pmm",name:"Pmm (*2222)"}, 
+            {id:"Cmm",name:"Cmm (2*22)"}, 
+            {id:"Pmg",name:"Pmg (22*)"}, 
+            {id:"Pgg",name:"Pgg (22x)"}, 
+            {id:"P3",name:"P3 (333)"}, 
+            {id:"P31m",name:"P31m (3*3)"}, 
+            {id:"P3m1",name:"P3m1 (*333)"}, 
+            {id:"P4",name:"P4 (442)"}, 
+            {id:"P4g",name:"P4g (4*2)"}, 
+            {id:"P4m",name:"P4m (*442)"}, 
+            {id:"P6",name:"P6 (632)"}, 
+            {id:"P6m",name:"P6m (*632)"}, 
         ];
-        groupNameList.forEach(groupName => {
+        groupNameList.forEach(groupInfo => {
             let opt = document.createElement('option');
-            opt.innerHTML = groupName;
-            opt.value = groupName;
+            opt.innerHTML = groupInfo.name;
+            opt.value = groupInfo.id;
             groupMenu.appendChild(opt);
         });
     }

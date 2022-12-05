@@ -433,7 +433,7 @@ class PmmGroup extends SymmetryGroup {
             { name: "Ma", type:"M", pos:[0.0,0.0,0.5,0.0] },
             { name: "Mb", type:"M", pos:[0.0,0.5,0.5,0.5] },
             { name: "Mc", type:"M", pos:[0.0,0.0,0.0,0.5] },
-            { name: "Md", type:"M", pos:[0.0,0.5,0.5,0.5] },
+            { name: "Md", type:"M", pos:[0.5,0.0,0.5,0.5] },
         ];
     }
     getFoundamentalP(p) {
@@ -557,7 +557,7 @@ class CmmGroup extends SymmetryGroup {
             { name: "R2a", type:"R2", pos:[0.0,0.0] },
             { name: "R2b", type:"R2", pos:[0.5,0.5] },
             { name: "R2c", type:"R2", pos:[0.0,0.5] },
-            { name: "R2d", type:"R2", pos:[0.5,0.0] },
+            { name: "R2c", type:"R2", pos:[0.5,0.0] },
             { name: "Ma", type:"M", pos:[0,1,1/2,1/2] },
             { name: "Mb", type:"M", pos:[0,0,1/2,1/2] },
             { name: "Ga", type:"G", pos:[0,1/2,1/4,3/4] },
@@ -595,7 +595,7 @@ class P4Group extends SymmetryGroup {
             { name: "R4a", type:"R4", pos:[0.5,0.5] },
             { name: "R4b", type:"R4", pos:[0.0,0.0] },
             { name: "R2a", type:"R2", pos:[0.0,0.5] },
-            { name: "R2b", type:"R2", pos:[0.5,0.0] },
+            { name: "R2a", type:"R2", pos:[0.5,0.0] },
         ];
 
     }
