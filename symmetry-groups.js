@@ -507,11 +507,13 @@ class PggGroup extends SymmetryGroup {
         ]
         this.symmetrySymbols = [
             { name: "R2a", type:"R2", pos:[0.5,0.5] },
+            { name: "R2a", type:"R2", pos:[0.0,0.0] },
             { name: "R2b", type:"R2", pos:[0.0,0.5] },
-            { name: "R2c", type:"R2", pos:[0.5,0.0] },
+            { name: "R2b", type:"R2", pos:[0.5,0.0] },
             { name: "Ga", type:"G", pos:[1/4,1/4,3/4,1/4] },
+            { name: "Ga", type:"G", pos:[1/4,3/4,3/4,3/4] },
             { name: "Gb", type:"G", pos:[1/4,1/4,1/4,1/2] },
-            { name: "Gc", type:"G", pos:[3/4,1/4,3/4,1/2] },
+            { name: "Gb", type:"G", pos:[3/4,1/4,3/4,1/2] },
         ];
     }
     getFoundamentalP(p) {
@@ -635,7 +637,7 @@ class P4mGroup extends SymmetryGroup {
             { name: "R4a", type:"R4", pos:[0.5,0.5] },
             { name: "R4b", type:"R4", pos:[0.0,0.0] },
             { name: "R2a", type:"R2", pos:[0.5,0.0] },
-            { name: "R2b", type:"R2", pos:[0.0,0.5] },
+            { name: "R2a", type:"R2", pos:[0.0,0.5] },
             { name: "Ma",  type:"M",  pos:[0.0,0.0,1.0,0.0] },
             { name: "Ma",  type:"M",  pos:[0.0,0.0,0.0,1.0] },
             { name: "Mb",  type:"M",  pos:[0.5,0.0,0.5,1.0] },
@@ -688,7 +690,7 @@ class P4gGroup extends SymmetryGroup {
             { name: "R4a", type:"R4", pos:[0.5,0.5] },
             { name: "R4a", type:"R4", pos:[0.0,0.0] },
             { name: "R2a", type:"R2", pos:[0.0,0.5] },
-            { name: "R2b", type:"R2", pos:[0.5,0.0] },
+            { name: "R2a", type:"R2", pos:[0.5,0.0] },
             { name: "Ma",  type:"M",  pos:[0.5,0.0,0.0,0.5] },
             { name: "Ma",  type:"M",  pos:[0.5,0.0,1.0,0.5] },
             { name: "Ga",  type:"G",  pos:[0.0,0.0,0.5,0.5] },
