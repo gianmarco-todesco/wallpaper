@@ -912,6 +912,7 @@ class P6mGroup extends SymmetryGroup {
             { name: "R2a", type:"R2", pos:[1/2,0] },
             { name: "R2a", type:"R2", pos:[0,1/2] },
             { name: "R2a", type:"R2", pos:[1/2,1/2] },
+
             { name: "Ma",  type:"M", pos:[0,0,1/3,1/3] },
             { name: "Ma",  type:"M", pos:[0.5,0,0,1] },
             { name: "Ma",  type:"M", pos:[0.0,0.5,1,0] },
@@ -924,10 +925,15 @@ class P6mGroup extends SymmetryGroup {
             { name: "Mb",  type:"M", pos:[0,0,0,1] },
             { name: "Mb",  type:"M", pos:[1,0,0,1] },
             
-            /*
             { name: "Ga",  type:"G", pos:[1/2,0,1/4,1/4] },
             { name: "Ga",  type:"G", pos:[1/2,0,1/2,1/2] },
-            { name: "Ga",  type:"G", pos:[0,1/2,1,1/2] },   */         
+            { name: "Ga",  type:"G", pos:[0,1/2,1,1/2] },  
+
+            { name: "Gb",  type:"G", pos:[1/4,0,0,1/2] },
+            { name: "Gb",  type:"G", pos:[0,1/4,1/2,0] },
+            { name: "Gb",  type:"G", pos:[1/2,0,1,1/2] },
+            //{ name: "Ga",  type:"G", pos:[1/2,0,1/2,1/2] },
+            //{ name: "Ga",  type:"G", pos:[0,1/2,1,1/2] },  
         ];
 
     }
