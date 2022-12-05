@@ -466,9 +466,11 @@ class PmgGroup extends SymmetryGroup {
         ]
         this.symmetrySymbols = [
             { name: "R2a", type:"R2", pos:[0.0,0.25] },
+            { name: "R2a", type:"R2", pos:[0.0,0.75] },
             { name: "R2b", type:"R2", pos:[0.5,0.25] },
+            { name: "R2b", type:"R2", pos:[0.5,0.75] },
             { name: "Ma", type:"M", pos:[0.0,0.0,0.5,0.0] },
-            { name: "Mb", type:"M", pos:[0.0,0.5,0.5,0.5] },
+            { name: "Ma", type:"M", pos:[0.0,0.5,0.5,0.5] },
             { name: "Ga", type:"G", pos:[0.0,0.0,0.0,0.5] },
             { name: "Gb", type:"G", pos:[0.5,0.0,0.5,0.5] },
         ];
@@ -777,8 +779,11 @@ class P3m1Group extends SymmetryGroup {
             { name: "R3b", type:"R3", pos:[1/3,1/3] },
             { name: "R3c", type:"R3", pos:[2/3,2/3] },
             { name: "Ma",  type:"M", pos:[0,1,1/3,1/3] },
-            { name: "Mb",  type:"M", pos:[1/3,1/3,2/3,2/3] },
-            { name: "Mc",  type:"M", pos:[2/3,2/3,0,1] },
+            { name: "Ma",  type:"M", pos:[1/3,1/3,2/3,2/3] },
+            { name: "Ma",  type:"M", pos:[2/3,2/3,0,1] },
+            { name: "Ga",  type:"G", pos:[1/4,0,0,1/2] },
+            { name: "Ga",  type:"G", pos:[0,1/4,1/2,0] },
+            { name: "Ga",  type:"G", pos:[1/2,0,1,1/2] },
             
         ];
     }
