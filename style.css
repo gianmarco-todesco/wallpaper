@@ -108,7 +108,7 @@
 
 .symmetry-symbol-label {
     display: inline-block;
-    width:20px;
+    min-width:30px;
 }
 
 #info {
