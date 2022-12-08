@@ -20,16 +20,6 @@ let prova;
 let downloadLink;
 let globalSymmetrySymbols;
 
-// --------------------------------------------------------
-/*
-function getCurrentColorRgba() {
-    let rgb = currentColor.rgb();
-    return [rgb[0]/255,rgb[1]/255,rgb[2]/255,1];
-}
-
-// --------------------------------------------------------
-*/
-
 
 function createDynamicTexture() {
   const attachments = [
@@ -61,13 +51,14 @@ document.addEventListener('DOMContentLoaded', ()=>{
 });
 
 // --------------------------------------------------------
+//
 // resize
+//
 window.addEventListener('resize', (event) => {
   twgl.resizeCanvasToDisplaySize(gl.canvas);
   sg.setCanvasSize(gl.canvas.width, gl.canvas.height, margin);    
   worldToBufferMatrix = sg.getWorldToBufferMatrix();
   worldPolygon = sg.createWorldPolygon(gl, worldPolygon);
-  // computeCanvasPos();
 });
 
 // --------------------------------------------------------
@@ -85,10 +76,9 @@ function initialize() {
     GU.init(gl);
   
     createDynamicTexture();
-    //gl.enable(gl.CULL_FACE);
-    // clear offline buffer  
-    gl.clearColor(0.0, 0.0, 0.0, 1);
-    gl.clear(gl.COLOR_BUFFER_BIT);
+
+    //gl.clearColor(0.0, 0.0, 0.0, 1);
+    //gl.clear(gl.COLOR_BUFFER_BIT);
 
     let textureCanvas = GU.createBlurredDotTexture();
     texture = twgl.createTexture(gl, {
@@ -96,32 +86,27 @@ function initialize() {
         min: gl.LINEAR,
     });
 
-    /*
-    function updateTexture() {
-        gl.bindTexture(gl.TEXTURE_2D, textures.tx);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,gl.RGBA, gl.UNSIGNED_BYTE, txCtx.canvas);
-    }
-    */
-
-    setCurrentGroup("P1");
+    setCurrentGroup(localStorage["currentGroupName"] || "P1");
 
     initPointerEvents(gl.canvas);
     createControls();
     initButtons();
 
-    prova =  new DynamicColoredShape({ 
-        gl, n: 1000, verb: gl.LINES});
-    globalSymmetrySymbols = new DynamicColoredShape({ 
-        gl, n: 10000, verb: gl.LINES});
+    prova =  new DynamicColoredShape({ gl, n: 1000, verb: gl.LINES});
+
+    globalSymmetrySymbols = new DynamicColoredShape({ gl, n: 10000, verb: gl.LINES});
 
 }
 
+/*
 function foo(L) {
     globalSymmetrySymbols.idx = 0;
     let sgh = new SymmetryGroupHelper(sg,globalSymmetrySymbols);
     sgh.addSymbols(L);
 }
+*/
 
+/*
 function drawMyTest() 
 {
     // globalSymmetrySymbols.update();    
@@ -146,6 +131,7 @@ function drawMyTest()
     twgl.drawBufferInfo(gl, mytest.bufferInfo, gl.LINE_STRIP, 4);
 
 }
+*/
 
 // --------------------------------------------------------
 //
@@ -198,6 +184,7 @@ function setCurrentGroup(name) {
     paintStrokes();
     if(globalSymmetrySymbols)
         globalSymmetrySymbols.clear();
+    localStorage["currentGroupName"] = name;
 }
 
 
@@ -218,6 +205,124 @@ function getFoundamentalDomainBuffer() {
     });
     groupsTable[gName] = shape;
     return shape;
+}
+
+
+function createIcons()
+{
+    clearOfflineBuffer();
+    const width = 256, height = 256;
+
+
+    let { cx,cy,r} = sg.getFoundamentalCircle();
+    cx += width/2;
+    cy += height/2;
+    
+    let pts = [];
+    let m = 50;
+    for(let i=0;i<m;i++) {
+        let phi = Math.PI*2*i/m;
+        pts.push([cx + 20 * Math.cos(phi),cy + 20 * Math.sin(phi)])
+    }
+
+    beginStroke(pts[m-1][0], pts[m-1][1]);
+    for(let i=0;i<m;i++) 
+        dragStroke(pts[i][0], pts[i][1]);
+    
+    const attachments = [
+        {
+          attach: gl.COLOR_ATTACHMENT0,
+          wrap: gl.REPEAT,
+          min: gl.LINEAR,
+          mag: gl.LINEAR,
+        },
+    ]
+    let buffer = twgl.createFramebufferInfo(gl, attachments, width, height);
+    twgl.bindFramebufferInfo(gl, buffer);
+    gl.viewport(0, 0, width, height);
+    gl.clearColor(1,1,0,1);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+
+    console.log(buffer);
+
+    let canvas, ctx, img;
+
+    let viewMatrix = m4.ortho(0, width, height,  0, -1, 1);
+    const oldCanvasWidth = sg.canvasWidth;
+    const oldCanvasHeight = sg.canvasHeight;
+    const oldCanvasMargin = sg.canvasMargin;
+    console.log(oldCanvasWidth, oldCanvasHeight, oldCanvasMargin)
+    sg.setCanvasSize(width, height, -50); 
+    let myWorldPolygon = sg.createWorldPolygon(gl, null, true);
+    console.log(oldCanvasWidth, oldCanvasHeight, oldCanvasMargin)
+    sg.setCanvasSize(oldCanvasWidth, oldCanvasHeight, oldCanvasMargin);
+    console.log(sg);
+
+    myWorldPolygon.draw(GU.texturedMaterial, { 
+        u_matrix : viewMatrix, 
+        u_texture : offlineBuffer.attachments[0], // twgl.createTexture(gl, {src:canvas}),
+        u_color: [1,1,1,1]
+    });
+
+    var data = new Uint8Array(width * height * 4);
+    gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, data);
+    gl.deleteFramebuffer(buffer.frameBuffer);
+  
+
+    // Create a 2D canvas to store the result 
+    canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    ctx = canvas.getContext('2d');
+
+    // Copy the pixels to a 2D canvas
+    var imageData = ctx.createImageData(width, height);
+    imageData.data.set(data);
+    ctx.putImageData(imageData, 0, 0);
+    
+    
+    img = new Image();
+    img.src = canvas.toDataURL();
+    img.style.borderColor = "blue";
+    img.style.borderStyle = "solid";
+    document.body.appendChild(img)
+}
+
+function boo2()
+{
+    twgl.bindFramebufferInfo(gl, offlineBuffer);
+
+    let width = offlineBuffer.width;
+    let height = offlineBuffer.height;
+    
+    var data = new Uint8Array(width * height * 4);
+    gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, data);
+    
+    for(let i=0; i<width * height ; i++) 
+    {
+        data[i*4]=data[i*4+3];
+        data[i*4+1] = 0;
+        data[i*4+3] = 255;
+    }
+    
+    // Create a 2D canvas to store the result 
+    let canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    let ctx = canvas.getContext('2d');
+
+    // Copy the pixels to a 2D canvas
+    var imageData = ctx.createImageData(width, height);
+    imageData.data.set(data);
+    ctx.putImageData(imageData, 0, 0);
+    
+    
+    let img = new Image();
+    img.src = canvas.toDataURL();
+    img.style.borderColor = "blue";
+    img.style.borderStyle = "solid";
+    document.body.appendChild(img)
 }
 
 // --------------------------------------------------------

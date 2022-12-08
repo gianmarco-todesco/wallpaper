@@ -1,16 +1,18 @@
 "use strict";
 let currentColor = chroma.hsv(0,1,0.6);
+let currentThickness = 5;
 let strokes = [];
 let undoneStrokes = [];
 let currentBgColor = chroma.hsv(0,1,0);
 
 class Stroke {
-    constructor(color) {
+    constructor(color, thickness) {
         let frgb = color.rgb();    
         this.rgba =  [frgb[0]/255,frgb[1]/255,frgb[2]/255,1];
+        this.thickness = thickness;
         this.pts = []; //  x,y,m
     }
-    // add a control point; call f(x,y) with all actual point
+    // add a control point; call f(x,y) with all the points actually added
     addPoint(x,y,f) {
         let n = this.pts.length;
         let m = 0;
@@ -54,24 +56,35 @@ function setCurrentColor(color) {
     currentColor = color;
 }
 
+function setCurrentThickness(thickness) {
+    currentThickness = thickness;
+}
+
 function setBackgroundColor(color) {
     currentBgColor = color;
     clearOfflineBuffer();
     paintStrokes();
 }
 
+function beginPaint() {
+    twgl.bindFramebufferInfo(gl, offlineBuffer);
+    gl.enable(gl.BLEND);
+    // gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE);
+    GU.viewMatrix = worldToBufferMatrix;
+}
+
+function endPaint() {
+    gl.disable(gl.BLEND);
+}
+
 // --------------------------------------------------------
 //
 // stroke
 // 
-function paintDot(x,y,rgba) {
-    // draw offline buffer
-    twgl.bindFramebufferInfo(gl, offlineBuffer);
-
-    gl.enable(gl.BLEND);
-    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-    GU.viewMatrix = worldToBufferMatrix;
-    const r = 5;
+function paintDot(x,y, rgba, thickness) {
+    // draw offline buffer    
+    const r = thickness;
     let pp = sg.getCellOrbit([x,y]);
     pp.forEach(p=>{
         m4.scale(
@@ -83,27 +96,32 @@ function paintDot(x,y,rgba) {
             u_color: rgba // getCurrentColorRgba()
         })
     })
-    gl.disable(gl.BLEND);
+    
 }
 
 function paintStroke(stroke) {
-    stroke.draw((x,y) => paintDot(x,y,stroke.rgba));
+    beginPaint();
+    stroke.draw((x,y) => paintDot(x,y,stroke.rgba, stroke.thickness));
+    endPaint();
 }
 
 function beginStroke(x,y) { 
+    beginPaint();
     let frgb = currentColor.rgb();
     let rgba = [frgb[0]/255,frgb[1]/255,frgb[2]/255,1];
 
-    let stroke = new Stroke(currentColor);    
-    stroke.addPoint(x,y,(x,y)=>paintDot(x,y,stroke.rgba))
+    let stroke = new Stroke(currentColor, currentThickness);    
+    stroke.addPoint(x,y,(x,y)=>paintDot(x,y,stroke.rgba, stroke.thickness))
     strokes.push(stroke); 
     undoneStrokes = [];
+    endPaint();
 }
 
 function dragStroke(x,y) {
+    beginPaint();
     if(strokes.length == 0) return;
     let stroke = strokes[strokes.length-1];
-    stroke.addPoint(x,y,(x,y)=>paintDot(x,y,stroke.rgba))
+    stroke.addPoint(x,y,(x,y)=>paintDot(x,y,stroke.rgba,stroke.thickness))
 }
 
 function undo() {
@@ -119,7 +137,9 @@ function redo() {
     let stroke = undoneStrokes[0];
     undoneStrokes.splice(0,1);
     strokes.push(stroke);
-    stroke.draw((x,y) => paintDot(x,y,stroke.rgba))
+    beginPaint();
+    stroke.draw((x,y) => paintDot(x,y,stroke.rgba,stroke.thickness));
+    endPaint();
 }
 
 
@@ -133,8 +153,10 @@ function clearOfflineBuffer() {
 
 function paintStrokes() {
     let t = performance.now();
-    strokes.forEach(stroke => stroke.draw((x,y) => paintDot(x,y,stroke.rgba)));
+    beginPaint();
+    strokes.forEach(stroke => stroke.draw((x,y) => paintDot(x,y,stroke.rgba, stroke.thickness)));
     // for(let i=0; i+1<strokes.length; i+=2) stroke(strokes[i], strokes[i+1]);
+    endPaint();
     console.log(performance.now()-t);
 }
 

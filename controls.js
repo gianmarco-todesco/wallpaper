@@ -167,8 +167,10 @@ class GroupControlPanel {
             let opt = document.createElement('option');
             opt.innerHTML = groupInfo.name;
             opt.value = groupInfo.id;
-            groupMenu.appendChild(opt);
+            groupMenu.appendChild(opt);            
         });
+        let currentGroupName = localStorage["currentGroupName"];
+        if(currentGroupName)groupMenu.value = currentGroupName;
     }
 
     refresh(groupName) {

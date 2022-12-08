@@ -1,3 +1,5 @@
+'use strict';
+
 
 class SymmetryGroup {
     constructor() {
@@ -55,8 +57,10 @@ class SymmetryGroup {
         return [u0,u1,v0,v1];
     }
 
-    createWorldPolygon(gl, worldPolygon) {
+    createWorldPolygon(gl, worldPolygon=null, singleCell=false) {
         const [u0,u1,v0,v1] = this._computeUVRange();
+        // u0,u1,v0,v1 are integers; 
+        // the rectangle between getP(u0,v0) and getP(u1,v1) covers completely the canvas 
         const [x0,y0] = this.cell[0];
         const [ax,ay] = this.a;
         const [bx,by] = this.b;
@@ -71,20 +75,29 @@ class SymmetryGroup {
         const uvs = []; // u0,v0, u1,v0, u0,v1, u1,v1];
         const indices = [];
 
-        const m = 2;
-        for(let i=0;i<m;i++) {
-            let v = (v0*(m-1-i)+v1*i)/(m-1);
-            for(let j=0;j<m;j++) {
-                let u = (u0*(m-1-j)+u1*j)/(m-1);
-                uvs.push(u,v);
-                pts.push(x0 + ax*u + bx*v, y0 + ay*u + by*v);
+        if(!singleCell) {
+            const m = 2;
+            for(let i=0;i<m;i++) {
+                let v = (v0*(m-1-i)+v1*i)/(m-1);
+                for(let j=0;j<m;j++) {
+                    let u = (u0*(m-1-j)+u1*j)/(m-1);
+                    uvs.push(u,v);
+                    pts.push(x0 + ax*u + bx*v, y0 + ay*u + by*v);
+                }
             }
-        }
-        for(let i=0;i+1<m;i++) {
-            for(let j=0;j+1<m;j++) {
-                let k = i*m + j;
-                indices.push(k,k+1,k+m+1, k,k+m+1,k+m);
+            for(let i=0;i+1<m;i++) {
+                for(let j=0;j+1<m;j++) {
+                    let k = i*m + j;
+                    indices.push(k,k+1,k+m+1, k,k+m+1,k+m);
+                }
+            }    
+        } else {
+            uvs.push(0,0,1,0,0,1,1,1);
+            for(let i=0;i<4;i++) {
+                let u = uvs[i*2], v = uvs[i*2+1];
+                pts.push(x0 + ax * u + bx * v, y0 + ay*u + by*v);
             }
+            indices.push(0,1,2,1,2,3);
         }
         
         if(!worldPolygon) {
@@ -106,6 +119,7 @@ class SymmetryGroup {
             return worldPolygon;
         }
     }
+
 
 
     createWorldPolygon_old(gl, worldPolygon) {
@@ -261,6 +275,29 @@ class SymmetryGroup {
             }            
         });
     }
+
+    getFoundamentalCircle() {
+        const fd = this.foundamentalDomain;
+        const pts = [];
+        let m = fd.length/2;
+        for(let i=0; i<m; i++) {
+            pts.push(this.getP(fd[2*i], fd[2*i+1]));
+        }
+        let cx = 0, cy = 0;
+        pts.forEach(([x,y])=>{ cx+= x/m; cy+=y/m; });
+        let r = Infinity;
+        for(let i=0; i<m; i++) {
+            const [x0,y0] = pts[i];
+            const [x1,y1] = pts[(i+1)%m];
+            let dx = x1-x0, dy = y1-y0;
+            let x = cx - x0, y = cy - y0;
+            let u = Math.sqrt(dx*dx+dy*dy);
+            let ux = -dy/u, uy = dx/u;
+            let d = Math.abs(x*ux + y*uy);
+            if(d<r) r = d;
+        }
+        return {cx,cy,r};
+    }
 }
 
 /*
@@ -279,6 +316,7 @@ class P1Group extends SymmetryGroup {
         super();
         this.setVectors([200,0], [0,200]);
         this.foundamentalDomain = [-1,-1,1,-1,-1,1,1,1];
+        this.F_pos = [0,0,1];
     }
     getFoundamentalP(p) {
         let [u,v,uu,vv] = this.getUV(p);
@@ -297,6 +335,7 @@ class P2Group extends SymmetryGroup {
         super();
         this.setVectors([200,0], [0,150]);
         this.foundamentalDomain = [-1,-1,1,-1,1,1];
+        this.F_pos = [-0.3,0.4,1];
         this.generatorSymbols = [
             ["R2",0,0], ["R2",0.5,0], ["R2",1,0], 
             ["R2",0.5,0.5], ["R2",1,0.5], ["R2",1,1], 
@@ -331,6 +370,7 @@ class PmGroup extends SymmetryGroup {
         super();
         this.setVectors([200,0], [0,150]);
         this.foundamentalDomain = [-1,-1,1,-1,-1,0,1,0];
+        this.F_pos = [0,0.6,0.5];
         this.generatorSymbols = [
             ["M",0,0,1,0],
             ["M",0,0.5,1,0.5]
